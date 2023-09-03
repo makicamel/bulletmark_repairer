@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'byebug'
+
 require 'action_controller/railtie'
 require 'active_record/railtie'
 require 'bullet'
