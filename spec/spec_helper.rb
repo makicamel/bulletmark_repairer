@@ -2,6 +2,7 @@
 
 require 'action_controller/railtie'
 require 'active_record/railtie'
+require 'bullet'
 
 require 'bulletmark_repairer'
 
@@ -12,6 +13,10 @@ module BulletmarkRepairerTestApp
     config.root = "#{__dir__}/fake_app"
     config.secret_key_base = 'bulletmark repairer'
     config.hosts = ['localhost']
+    config.after_initialize do
+      ::Bullet.enable = true
+      ::Bullet.bullet_logger = true
+    end
   end
 end
 
