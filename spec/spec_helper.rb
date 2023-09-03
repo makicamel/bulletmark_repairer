@@ -11,6 +11,7 @@ module BulletmarkRepairerTestApp
     config.active_support.deprecation = :log
     config.root = "#{__dir__}/fake_app"
     config.secret_key_base = 'bulletmark repairer'
+    config.hosts = ['localhost']
   end
 end
 
@@ -29,5 +30,8 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+  end
+  config.before(:all, type: :request) do
+    host! 'localhost'
   end
 end
