@@ -1,6 +1,22 @@
 # frozen_string_literal: true
 
+require 'action_controller/railtie'
+require 'active_record/railtie'
+
 require 'bulletmark_repairer'
+
+module BulletmarkRepairerTestApp
+  class Application < Rails::Application
+    config.eager_load = false
+    config.active_support.deprecation = :log
+    config.root = "#{__dir__}/fake_app"
+    config.secret_key_base = 'bulletmark repairer'
+  end
+end
+
+BulletmarkRepairerTestApp::Application.initialize!
+ActiveRecord::Tasks::DatabaseTasks.drop_current 'test'
+ActiveRecord::Tasks::DatabaseTasks.create_current 'test'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
