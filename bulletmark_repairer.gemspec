@@ -29,5 +29,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'bullet'
 
+  spec.add_development_dependency 'byebug'
   spec.add_development_dependency 'rails'
 end
