@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'bulletmark_repairer/version'
+require 'bulletmark_repairer/version'
+require 'bulletmark_repairer/railtie'
+require 'bulletmark_repairer/bulletmark_repairer'
 
 module BulletmarkRepairer
   class Error < StandardError; end
