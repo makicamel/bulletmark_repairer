@@ -42,3 +42,23 @@ RSpec.configure do |config|
     host! 'localhost'
   end
 end
+
+RSpec.shared_examples 'correctly patched' do
+  it do
+    File.open(filename) do |f|
+      src = f.read
+      expect(src.include?(original_src)).to eq true
+      expect(src.include?(patched_src)).to eq false
+    end
+
+    subject
+
+    File.open(filename) do |f|
+      src = f.read
+      expect(src.include?(original_src)).to eq false
+      expect(src.include?(patched_src)).to eq true
+    end
+
+    system("git checkout #{filename}")
+  end
+end
