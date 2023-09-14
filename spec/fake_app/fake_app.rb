@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 BulletmarkRepairerTestApp::Application.routes.draw do
-  resources :plays, only: [:index]
+  resources :previous_lines, only: [:index]
 end
 
 class CreateAllTables < ActiveRecord::Migration[7.0]
@@ -27,10 +27,6 @@ class CreateAllTables < ActiveRecord::Migration[7.0]
 end
 
 CreateAllTables.up
-
-class PlaysController < ActionController::Base
-  def index; end
-end
 
 class Play < ActiveRecord::Base
   has_many :play_actors
