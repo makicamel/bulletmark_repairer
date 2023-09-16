@@ -19,11 +19,11 @@ Metrics/AbcSize:
 
 Metrics/CyclomaticComplexity:
   AllowedMethods:
-    - insert_include
+    - insert_includes
 
 Metrics/PerceivedComplexity:
   AllowedMethods:
-    - insert_include
+    - insert_includes
 
 Metrics/BlockLength:
   Enabled: false

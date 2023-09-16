@@ -4,7 +4,7 @@ class Corrector < Parser::TreeRewriter
   def on_def(node)
     method = node.children.first
     patched_methods[method] = nil
-    node.children.each { |child_node| insert_include(node: child_node, method:) }
+    node.children.each { |child_node| insert_includes(node: child_node, method:) }
 
     super
   end
@@ -15,7 +15,7 @@ class Corrector < Parser::TreeRewriter
     @patched_methods ||= {}
   end
 
-  def insert_include(node:, method:)
+  def insert_includes(node:, method:)
     return if patched_methods[method]
     return if !node.respond_to?(:children) || node.children.empty?
     return unless node.location.expression.line <= line_no && line_no <= node.location.expression.last_line
@@ -24,7 +24,7 @@ class Corrector < Parser::TreeRewriter
       insert_after node.children[0].location.expression, ".includes(#{associations})"
       patched_methods[method] = true
     else
-      node.children.each { |child_node| insert_include(node: child_node, method:) }
+      node.children.each { |child_node| insert_includes(node: child_node, method:) }
     end
   end
 
