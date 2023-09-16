@@ -14,6 +14,6 @@ class MultipleActionsController < ActionController::Base
   private
 
   def set_plays
-    @plays = Play.joins(:actors)
+    @plays = Play.all
   end
 end

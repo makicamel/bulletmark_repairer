@@ -19,7 +19,10 @@ RSpec.describe MultipleActionsController do
       SRC
     end
 
-    before { create(:play, :blast) }
+    before do
+      create(:play, :blast)
+      create(:play, :crescent_wolf)
+    end
 
     subject { get multiple_actions_path }
 
