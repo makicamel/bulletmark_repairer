@@ -10,7 +10,7 @@ module BulletmarkRepairer
     end
 
     module Rack
-      def call(...)
+      def call(env)
         BulletmarkRepairer.notifications.clear
         BulletmarkRepairer.tracers.clear
         super
@@ -19,7 +19,13 @@ module BulletmarkRepairer
           tracer = BulletmarkRepairer.tracers.last
 
           file_name = tracer&.scan(%r{\A([./\w]+):\d+:in `[\w\s]+'\z})&.flatten&.first
-          Parser::Runner::RubyRewrite.go(%W[-l lib/bulletmark_repairer/corrector.rb -m #{file_name}]) if file_name
+          if file_name.start_with?("#{Rails.root}/app/views")
+            BulletmarkRepairer.target_method = env['action_dispatch.request.parameters']['action'].to_sym
+            controller_file = "#{Rails.root}/app/controllers/#{env['action_dispatch.request.parameters']['controller']}_controller.rb"
+            Parser::Runner::RubyRewrite.go(%W[-l lib/bulletmark_repairer/controller_corrector.rb -m #{controller_file}])
+          else
+            Parser::Runner::RubyRewrite.go(%W[-l lib/bulletmark_repairer/corrector.rb -m #{file_name}])
+          end
         end
       end
     end
