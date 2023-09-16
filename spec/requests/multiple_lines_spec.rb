@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe MultipleLinesController do
-  let(:filename) { 'spec/fake_app/app/controllers/multiple_lines_controller.rb' }
   let(:original_src) do
     <<-SRC
   def index

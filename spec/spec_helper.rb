@@ -44,6 +44,8 @@ RSpec.configure do |config|
 end
 
 RSpec.shared_examples 'correctly patched' do
+  let(:filename) { "spec/fake_app/app/controllers/#{described_class.to_s.underscore}.rb" }
+
   it do
     File.open(filename) do |f|
       src = f.read

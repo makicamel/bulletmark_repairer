@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe PreviousLinesController do
-  let(:filename) { 'spec/fake_app/app/controllers/previous_lines_controller.rb' }
   let(:original_src) do
     <<-SRC
   def index
