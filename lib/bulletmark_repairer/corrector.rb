@@ -5,8 +5,6 @@ class Corrector < Parser::TreeRewriter
     method = node.children.first
     patched_methods[method] = nil
     node.children.each { |child_node| insert_includes(node: child_node, method:) }
-
-    super
   end
 
   private
