@@ -13,11 +13,11 @@ module BulletmarkRepairer
     @tracers ||= []
   end
 
-  def self.target_method
-    @target_method ||= nil
+  def self.action
+    @action ||= nil
   end
 
-  def self.target_method=(target_method)
-    @target_method = target_method
+  def self.action=(action)
+    @action = action
   end
 end

@@ -6,4 +6,5 @@ BulletmarkRepairerTestApp::Application.routes.draw do
   resources :previous_lines, only: [:index]
   resources :multiple_actions, only: %i[index show]
   resources :n_plus_one_in_views, only: [:index]
+  resources :n_plus_one_in_views_multiple_methods, only: %i[index show]
 end

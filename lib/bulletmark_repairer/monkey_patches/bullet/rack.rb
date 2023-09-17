@@ -13,6 +13,7 @@ module BulletmarkRepairer
       def call(env)
         BulletmarkRepairer.notifications.clear
         BulletmarkRepairer.tracers.clear
+        BulletmarkRepairer.action = nil
         super
       ensure
         if BulletmarkRepairer.notifications.present?
@@ -20,7 +21,7 @@ module BulletmarkRepairer
 
           file_name = tracer&.scan(%r{\A([./\w]+):\d+:in `[\w\s]+'\z})&.flatten&.first
           if file_name.start_with?("#{Rails.root}/app/views")
-            BulletmarkRepairer.target_method = env['action_dispatch.request.parameters']['action'].to_sym
+            BulletmarkRepairer.action = env['action_dispatch.request.parameters']['action'].to_sym
             controller_file = "#{Rails.root}/app/controllers/#{env['action_dispatch.request.parameters']['controller']}_controller.rb"
             Parser::Runner::RubyRewrite.go(%W[-l lib/bulletmark_repairer/controller_corrector.rb -m #{controller_file}])
           else
