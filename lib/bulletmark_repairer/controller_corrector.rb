@@ -1,13 +1,20 @@
 # frozen_string_literal: true
 
 class ControllerCorrector < Parser::TreeRewriter
-  def on_class(class_node)
-    node = class_node.children.last
+  def on_class(node)
     node
       .children
-      .select do |child_node|
+      .each do |child_node|
         type, identifier = child_node.to_sexp_array.take(2)
-        target_nodes[identifier] = child_node if type == :def
+        case type
+        when :def
+          target_nodes[identifier] = child_node
+        when :begin
+          child_node.children.each do |grand_child_node|
+            type, identifier = grand_child_node.to_sexp_array.take(2)
+            target_nodes[identifier] = grand_child_node if type == :def
+          end
+        end
       end
     action_node = target_nodes.delete(BulletmarkRepairer.action)
     insert_includes(node: action_node)
