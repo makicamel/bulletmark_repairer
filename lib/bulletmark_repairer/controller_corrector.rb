@@ -52,10 +52,13 @@ class ControllerCorrector < Parser::TreeRewriter
     return @instance_variable_name if @instance_variable_name
 
     callers = BulletmarkRepairer.notifications.last.instance_variable_get(:@callers)
-    view_file, yield_index = callers.last.scan(%r{\A(/[./\w]+):\d+:in `[\w]+'\z}).flatten
+    caller_index = callers.index do |caller|
+      caller =~ %r{\A(#{Rails.root}/app/views/[./\w]+):\d+:in `[\w]+'\z} && !Pathname.new(Regexp.last_match(1)).basename.to_s.start_with?('_')
+    end
+    view_file, yield_index = callers[caller_index].scan(%r{\A(/[./\w]+):(\d+):in `[\w]+'\z}).flatten
     File.open(view_file) do |f|
-      source = f.readlines[yield_index.to_i]
-      @instance_variable_name = source.scan(/\b?(@[\w]+)\b?/).flatten.last.to_sym
+      line = f.readlines[yield_index.to_i - 1]
+      @instance_variable_name = line.scan(/\b?(@[\w]+)\b?/).flatten.last.to_sym
     end
   end
 
