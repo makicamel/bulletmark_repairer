@@ -11,6 +11,8 @@ module BulletmarkRepairer
     def initialize(notifications)
       @markers = {}
       notifications&.each do |notification|
+        next unless notification.is_a?(::Bullet::Notification::NPlusOneQuery)
+
         base_class = notification.instance_variable_get(:@base_class)
         if @markers[base_class]
           @markers[base_class].add_association(notification)

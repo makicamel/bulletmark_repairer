@@ -27,6 +27,7 @@ ActiveRecord::Tasks::DatabaseTasks.drop_current 'test'
 ActiveRecord::Tasks::DatabaseTasks.create_current 'test'
 
 require_relative 'fake_app/fake_app'
+require_relative 'shared_examples'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -40,27 +41,5 @@ RSpec.configure do |config|
   end
   config.before(:all, type: :request) do
     host! 'localhost'
-  end
-end
-
-RSpec.shared_examples 'correctly patched' do
-  let(:filename) { "spec/fake_app/app/controllers/#{described_class.to_s.underscore}.rb" }
-
-  it do
-    File.open(filename) do |f|
-      src = f.read
-      expect(src.include?(original_src)).to eq true
-      expect(src.include?(patched_src)).to eq false
-    end
-
-    subject
-
-    File.open(filename) do |f|
-      src = f.read
-      expect(src.include?(original_src)).to eq false
-      expect(src.include?(patched_src)).to eq true
-    end
-
-    system("git checkout #{filename}")
   end
 end
