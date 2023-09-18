@@ -14,11 +14,16 @@ module BulletmarkRepairer
         BulletmarkRepairer.action = nil
         super
       ensure
-        if BulletmarkRepairer.markers.present?
-          BulletmarkRepairer::Pathcer.execute(
-            controller: env['action_dispatch.request.parameters']['controller'],
-            action: env['action_dispatch.request.parameters']['action'].to_sym
-          )
+        begin
+          if BulletmarkRepairer.markers.present?
+            BulletmarkRepairer::Pathcer.execute(
+              controller: env['action_dispatch.request.parameters']['controller'],
+              action: env['action_dispatch.request.parameters']['action'].to_sym
+            )
+          end
+        rescue StandardError => e
+          # TODO: handle error
+          raise e
         end
       end
     end
