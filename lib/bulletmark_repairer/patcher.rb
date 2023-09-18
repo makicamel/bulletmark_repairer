@@ -9,7 +9,7 @@ module BulletmarkRepairer
     end
 
     def execute
-      tracers = BulletmarkRepairer.notifications.last.instance_variable_get(:@callers)
+      tracers = BulletmarkRepairer.markers.last.instance_variable_get(:@callers)
       n_plus_one_in_view = tracers.any? { |tracer| tracer.match?(%r{\A#{Rails.root}/app/views/[./\w]+:\d+:in `[\w]+'\z}) }
 
       if n_plus_one_in_view

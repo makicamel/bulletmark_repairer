@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 module BulletmarkRepairer
-  def self.notifications
-    @notifications ||= []
+  def self.markers
+    @markers ||= []
   end
 
-  def self.notifications=(notifications)
-    @notifications = notifications
+  def self.markers=(markers)
+    @markers = markers
   end
 
   def self.tracers
