@@ -27,16 +27,10 @@ class Corrector < Parser::TreeRewriter
   end
 
   def line_no
-    return @line_no if @line_no
-
-    callers = BulletmarkRepairer.markers.last.instance_variable_get(:@callers)
-    yield_index = callers.index { |caller| caller.scan(%r{\A/[./\w]+:(\d+):in `block in [\w]+'\z}).flatten.presence }
-    @line_no = callers[yield_index + 1].scan(%r{\A/[./\w]+:(\d+):in `[\w]+'\z}).flatten.first.to_i
+    BulletmarkRepairer.markers.patching_marker.line_no
   end
 
   def associations
-    BulletmarkRepairer.markers.map do |marker|
-      marker.instance_variable_get(:@associations)
-    end.flatten
+    BulletmarkRepairer.markers.patching_marker.associations
   end
 end

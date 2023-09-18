@@ -9,15 +9,14 @@ module BulletmarkRepairer
     end
 
     def execute
-      tracers = BulletmarkRepairer.markers.last.instance_variable_get(:@callers)
-      n_plus_one_in_view = tracers.any? { |tracer| tracer.match?(%r{\A#{Rails.root}/app/views/[./\w]+:\d+:in `[\w]+'\z}) }
-
-      if n_plus_one_in_view
-        Parser::Runner::RubyRewrite.go(%W[-l #{controller_corrector} -m #{controller_file}])
-      else
-        tracers.any? { |tracer| tracer =~ %r{\A([./\w]+):\d+:in `[\w\s]+'\z} }
-        file_name = Regexp.last_match[1]
-        Parser::Runner::RubyRewrite.go(%W[-l #{default_corrector} -m #{file_name}])
+      BulletmarkRepairer.markers.each do |_base_class, marker|
+        marker.patching!
+        if marker.n_plus_one_in_view?
+          Parser::Runner::RubyRewrite.go(%W[-l #{controller_corrector} -m #{controller_file}])
+        else
+          Parser::Runner::RubyRewrite.go(%W[-l #{default_corrector} -m #{marker.file_name}])
+        end
+        marker.patched!
       end
     end
 

@@ -56,22 +56,10 @@ class ControllerCorrector < Parser::TreeRewriter
   end
 
   def instance_variable_name
-    return @instance_variable_name if @instance_variable_name
-
-    callers = BulletmarkRepairer.markers.last.instance_variable_get(:@callers)
-    caller_index = callers.index do |caller|
-      caller =~ %r{\A(#{Rails.root}/app/views/[./\w]+):\d+:in `[\w]+'\z} && !Pathname.new(Regexp.last_match(1)).basename.to_s.start_with?('_')
-    end
-    view_file, yield_index = callers[caller_index].scan(%r{\A(/[./\w]+):(\d+):in `[\w]+'\z}).flatten
-    File.open(view_file) do |f|
-      line = f.readlines[yield_index.to_i - 1]
-      @instance_variable_name = line.scan(/\b?(@[\w]+)\b?/).flatten.last.to_sym
-    end
+    BulletmarkRepairer.markers.patching_marker.instance_variable_name_in_view
   end
 
   def associations
-    BulletmarkRepairer.markers.map do |marker|
-      marker.instance_variable_get(:@associations)
-    end.flatten
+    BulletmarkRepairer.markers.patching_marker.associations
   end
 end

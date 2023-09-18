@@ -3,13 +3,13 @@
 module BulletmarkRepairer
   module Bullet
     def end_request
-      BulletmarkRepairer.markers = Thread.current[:bullet_notification_collector].collection.to_a.deep_dup
+      BulletmarkRepairer.markers = Thread.current[:bullet_notification_collector].collection.to_a.dup
       super
     end
 
     module Rack
       def call(env)
-        BulletmarkRepairer.markers.clear
+        BulletmarkRepairer.markers = nil
         BulletmarkRepairer.tracers.clear
         BulletmarkRepairer.action = nil
         super
