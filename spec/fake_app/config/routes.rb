@@ -8,4 +8,5 @@ BulletmarkRepairerTestApp::Application.routes.draw do
   resources :n_plus_one_in_views, only: [:index]
   resources :n_plus_one_in_views_multiple_methods, only: %i[index show]
   resources :partial_views, only: [:index]
+  resources :multiple_base_classes, only: [:index]
 end

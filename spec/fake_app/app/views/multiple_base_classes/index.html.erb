@@ -1,0 +1,19 @@
+<p>companies</p>
+<% @companies.each do |company| %>
+  <%= company.name %>
+  <ul>
+    <% company.actors.each do |actor| %>
+      <li><%= actor.name %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<p>plays</p>
+<% @plays.each do |play| %>
+  <%= play.name %>
+  <ul>
+    <% play.actors.each do |actor| %>
+      <li><%= actor.name %></li>
+    <% end %>
+  </ul>
+<% end %>
