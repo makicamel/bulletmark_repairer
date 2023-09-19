@@ -6,7 +6,7 @@ module BulletmarkRepairer
   class Markers
     extend Forwardable
 
-    def_delegator :@markers, :each
+    def_delegators :@markers, :each, :present?
 
     def initialize(notifications)
       @markers = {}
