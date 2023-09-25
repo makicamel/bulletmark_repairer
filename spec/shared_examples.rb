@@ -11,6 +11,7 @@ RSpec.shared_examples 'correctly patched' do
     end
 
     subject
+    expect(response).to have_http_status 200
 
     File.open(filename) do |f|
       src = f.read
@@ -32,6 +33,7 @@ RSpec.shared_examples 'not patched' do
     end
 
     subject
+    expect(response).to have_http_status 200
 
     File.open(filename) do |f|
       src = f.read
