@@ -29,8 +29,11 @@ module BulletmarkRepairer
   class AssociationPathcer < Parser::TreeRewriter
     def on_def(node)
       insert_after node.location.name,
-                   "\n          BulletmarkRepairer.tracers.append(caller.grep(%r{#{Rails.root}})[1])"
-      super
+                   <<-SRC
+          \n
+          filename_index = caller.grep(%r{#{Rails.root}})[1].scan(%r{\\A([./\\w]+:\\d+):in `[\\w\\s]+'\\z}).flatten.first
+          BulletmarkRepairer.tracers[filename_index] |= [__method__]
+                   SRC
     end
   end
 end

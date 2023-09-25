@@ -28,7 +28,7 @@ module BulletmarkRepairer
   end
 
   class Marker
-    attr_reader :associations
+    attr_reader :base_class, :associations
 
     def initialize(notification)
       @base_class = notification.instance_variable_get(:@base_class)
@@ -66,8 +66,16 @@ module BulletmarkRepairer
       view_file, yield_index = @stacktraces[stacktrace_index].scan(%r{\A(/[./\w]+):(\d+):in `[\w]+'\z}).flatten
       File.open(view_file) do |f|
         line = f.readlines[yield_index.to_i - 1]
+        @instance_variable_finemale_index_in_view = "#{view_file}:#{yield_index}"
         @instance_variable_name_in_view = line.scan(/\b?(@[\w]+)\b?/).flatten.last.to_sym
       end
+    end
+
+    def direct_associations
+      return @direct_associations if @direct_associations
+
+      instance_variable_name_in_view
+      @direct_associations = BulletmarkRepairer.tracers[@instance_variable_finemale_index_in_view]
     end
 
     def patching?

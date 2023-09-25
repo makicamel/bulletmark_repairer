@@ -36,7 +36,7 @@ class ControllerCorrector < Parser::TreeRewriter
 
     type, identifier = node.to_sexp_array.take(2)
 
-    if type == :ivasgn && identifier == instance_variable_name
+    if type == :ivasgn && identifier == patching_marker.instance_variable_name_in_view
       insert_after node.children.last.location.expression, ".includes(#{associations})"
       @patched = true
     else
@@ -55,11 +55,22 @@ class ControllerCorrector < Parser::TreeRewriter
     end
   end
 
-  def instance_variable_name
-    BulletmarkRepairer.markers.patching_marker.instance_variable_name_in_view
+  def patching_marker
+    return @patching_marker if @patching_marker
+
+    @patching_marker = BulletmarkRepairer.markers.patching_marker
   end
 
   def associations
-    BulletmarkRepairer.markers.patching_marker.associations
+    if patching_marker.direct_associations == patching_marker.associations
+      patching_marker.associations
+    else
+      key = patching_marker.base_class.underscore
+      if key.singularize.in?(patching_marker.associations)
+        { key.singularize.to_sym => patching_marker.associations }
+      else
+        { key.pluralize.to_sym => patching_marker.associations }
+      end
+    end
   end
 end

@@ -10,7 +10,7 @@ module BulletmarkRepairer
   end
 
   def self.tracers
-    @tracers ||= []
+    @tracers ||= Hash.new { |hash, key| hash[key] = [] }
   end
 
   def self.action
