@@ -28,8 +28,7 @@ module BulletmarkRepairer
   class Associations
     extend Forwardable
 
-    def_delegators :@marker, :file_name, :line_no
-    attr_reader :associations
+    def_delegators :@marker, :file_name
 
     def instance_variable_name
       @marker.instance_variable_name_in_view
@@ -40,7 +39,11 @@ module BulletmarkRepairer
     end
 
     def corrector(dir)
-      BulletmarkRepairer::CorrectorBuilder.new(dir:, marker: @marker).execute
+      BulletmarkRepairer::CorrectorBuilder.new(
+        dir:,
+        marker: @marker,
+        associations: @associations
+      ).execute
     end
 
     private

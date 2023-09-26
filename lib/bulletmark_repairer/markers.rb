@@ -70,6 +70,7 @@ module BulletmarkRepairer
     end
 
     def instance_variable_name_in_view
+      return unless n_plus_one_in_view?
       return @instance_variable_name_in_view if @instance_variable_name_in_view
 
       stacktrace_index = @stacktraces.index do |stacktrace|
@@ -79,7 +80,7 @@ module BulletmarkRepairer
       File.open(view_file) do |f|
         line = f.readlines[yield_index.to_i - 1]
         @instance_variable_finemale_index_in_view = "#{view_file}:#{yield_index}"
-        @instance_variable_name_in_view = line.scan(/\b?(@[\w]+)\b?/).flatten.last.to_sym
+        @instance_variable_name_in_view = line.scan(/\b?(@[\w]+)\b?/).flatten.last
       end
     end
 

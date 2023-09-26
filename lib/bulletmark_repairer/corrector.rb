@@ -27,10 +27,10 @@ class Corrector < Parser::TreeRewriter
   end
 
   def line_no
-    BulletmarkRepairer::AssociationsBuilder.patching_associations.line_no
+    __EMBEDDED_LINE_NO__
   end
 
   def associations
-    BulletmarkRepairer::AssociationsBuilder.patching_associations.associations
+    '__EMBEDDED_ASSOCIATIONS__'
   end
 end

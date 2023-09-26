@@ -56,14 +56,14 @@ class ControllerCorrector < Parser::TreeRewriter
   end
 
   def action
-    BulletmarkRepairer::AssociationsBuilder.patching_associations.action
+    :__EMBEDDED_ACTION__
   end
 
   def instance_variable_name
-    BulletmarkRepairer::AssociationsBuilder.patching_associations.instance_variable_name
+    :__EMBEDDED_INSTANCE_VARIABLE_NAME__
   end
 
   def associations
-    BulletmarkRepairer::AssociationsBuilder.patching_associations.associations
+    '__EMBEDDED_ASSOCIATIONS__'
   end
 end

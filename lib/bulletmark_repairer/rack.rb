@@ -15,7 +15,7 @@ module BulletmarkRepairer
           BulletmarkRepairer::Pathcer.execute(
             notifications: Thread.current[:bullet_notification_collector],
             controller: env['action_dispatch.request.parameters']['controller'],
-            action: env['action_dispatch.request.parameters']['action'].to_sym
+            action: env['action_dispatch.request.parameters']['action']
           )
         end
       rescue StandardError => e
