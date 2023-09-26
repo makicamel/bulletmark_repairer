@@ -12,9 +12,9 @@ module BulletmarkRepairer
 
     def execute
       @markers.each do |_base_class, marker|
-        BulletmarkRepairer::AssociationsBuilder.build(marker)
+        @associations_builder.build(marker)
       end
-      BulletmarkRepairer::AssociationsBuilder.associations.each do |_index, associations|
+      @associations_builder.associations.each do |_index, associations|
         path = "#{Rails.root}/tmp/#{SecureRandom.hex(10)}"
         FileUtils.mkdir(path)
         Parser::Runner::RubyRewrite.go(%W[-l #{associations.corrector(path)} -m #{associations.file_name}])
@@ -26,6 +26,7 @@ module BulletmarkRepairer
 
     def initialize(notifications:, controller:, action:)
       @markers = Markers.new(notifications, controller:, action:)
+      @associations_builder = BulletmarkRepairer::AssociationsBuilder.new
     end
   end
 end

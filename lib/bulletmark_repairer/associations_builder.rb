@@ -4,18 +4,16 @@ require 'forwardable'
 
 module BulletmarkRepairer
   class AssociationsBuilder
-    class << self
-      def associations
-        @associations ||= {}
+    def build(marker)
+      if associations[marker.index]
+        # TODO
+      else
+        associations[marker.index] = Associations.new(marker)
       end
+    end
 
-      def build(marker)
-        if associations[marker.index]
-          # TODO
-        else
-          associations[marker.index] = Associations.new(marker)
-        end
-      end
+    def associations
+      @associations ||= {}
     end
   end
 
