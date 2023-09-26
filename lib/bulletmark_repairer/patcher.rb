@@ -29,9 +29,7 @@ module BulletmarkRepairer
     private
 
     def initialize(notifications:, controller:, action:)
-      @markers = Markers.new(notifications)
-      BulletmarkRepairer.controller = controller
-      BulletmarkRepairer.action = action
+      @markers = Markers.new(notifications, controller:, action:)
     end
   end
 end

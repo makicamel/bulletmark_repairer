@@ -16,7 +16,7 @@ class ControllerCorrector < Parser::TreeRewriter
           end
         end
       end
-    action_node = target_nodes.delete(BulletmarkRepairer.action)
+    action_node = target_nodes.delete(action)
     insert_includes(node: action_node)
   end
 
@@ -53,6 +53,10 @@ class ControllerCorrector < Parser::TreeRewriter
           end
         end
     end
+  end
+
+  def action
+    BulletmarkRepairer::AssociationsBuilder.patching_associations.action
   end
 
   def instance_variable_name

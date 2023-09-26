@@ -8,7 +8,7 @@ module BulletmarkRepairer
 
     def_delegator :@markers, :each
 
-    def initialize(notifications)
+    def initialize(notifications, controller:, action:)
       @markers = {}
       notifications.collection.to_a.each do |notification|
         next unless notification.is_a?(::Bullet::Notification::NPlusOneQuery)
@@ -17,7 +17,11 @@ module BulletmarkRepairer
         if @markers[base_class]
           @markers[base_class].add_association(notification)
         else
-          @markers[base_class] = Marker.new(notification)
+          @markers[base_class] = Marker.new(
+            notification,
+            controller:,
+            action:
+          )
         end
       end
     end
@@ -26,11 +30,13 @@ module BulletmarkRepairer
   class Marker
     attr_reader :base_class, :associations
 
-    def initialize(notification)
+    def initialize(notification, controller:, action:)
       @base_class = notification.instance_variable_get(:@base_class)
       @stacktraces = notification.instance_variable_get(:@callers)
       @associations = notification.instance_variable_get(:@associations)
       @patching = false
+      @controller = controller
+      @action = action
     end
 
     def add_association(notification)
@@ -49,7 +55,7 @@ module BulletmarkRepairer
 
     def file_name
       if n_plus_one_in_view?
-        BulletmarkRepairer.controller_file
+        "#{Rails.root}/app/controllers/#{@controller}_controller.rb"
       else
         @stacktraces.any? { |stacktrace| stacktrace =~ %r{\A([./\w]+):\d+:in `[\w\s]+'\z} }
         Regexp.last_match[1]

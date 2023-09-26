@@ -8,7 +8,6 @@ module BulletmarkRepairer
 
     def call(env)
       BulletmarkRepairer.tracers.clear
-      BulletmarkRepairer.action = nil
       @app.call(env)
     ensure
       begin

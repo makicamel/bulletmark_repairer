@@ -35,6 +35,10 @@ module BulletmarkRepairer
       @marker.instance_variable_name_in_view
     end
 
+    def action
+      @marker.instance_variable_get(:@action)
+    end
+
     def corrector(dir)
       corrector_name = @marker.n_plus_one_in_view? ? '/controller_corrector.rb' : '/corrector.rb'
       File.open("#{dir}#{corrector_name}", 'w') do |f|
