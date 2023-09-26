@@ -35,14 +35,13 @@ module BulletmarkRepairer
       @marker.instance_variable_name_in_view
     end
 
-    def corrector
-      return @corrector if @corrector
-
-      @corrector = if @marker.n_plus_one_in_view?
-                     Pathname.new(__FILE__).sub('/associations_builder.rb', '/controller_corrector.rb')
-                   else
-                     Pathname.new(__FILE__).sub('/associations_builder.rb', '/corrector.rb')
-                   end
+    def corrector(dir)
+      corrector_name = @marker.n_plus_one_in_view? ? '/controller_corrector.rb' : '/corrector.rb'
+      File.open("#{dir}#{corrector_name}", 'w') do |f|
+        corrector = Pathname.new(__FILE__).sub('/associations_builder.rb', corrector_name)
+        f.puts File.read(corrector)
+        f
+      end.path
     end
 
     private
