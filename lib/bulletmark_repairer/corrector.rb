@@ -31,6 +31,6 @@ class Corrector < Parser::TreeRewriter
   end
 
   def associations
-    BulletmarkRepairer.markers.patching_marker.associations
+    BulletmarkRepairer::AssociationsBuilder.patching_associations.associations
   end
 end

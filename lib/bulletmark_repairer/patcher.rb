@@ -10,13 +10,14 @@ module BulletmarkRepairer
 
     def execute
       BulletmarkRepairer.markers.each do |_base_class, marker|
-        marker.patching!
-        if marker.n_plus_one_in_view?
-          Parser::Runner::RubyRewrite.go(%W[-l #{controller_corrector} -m #{controller_file}])
-        else
-          Parser::Runner::RubyRewrite.go(%W[-l #{default_corrector} -m #{marker.file_name}])
-        end
-        marker.patched!
+        BulletmarkRepairer::AssociationsBuilder.build(marker)
+      end
+      BulletmarkRepairer::AssociationsBuilder.associations.each do |index, associations|
+        associations.instance_variable_get(:@marker).patching!
+        BulletmarkRepairer::AssociationsBuilder.patching_index = index
+        Parser::Runner::RubyRewrite.go(%W[-l #{associations.corrector} -m #{associations.file_name}])
+        BulletmarkRepairer::AssociationsBuilder.patching_index = nil
+        associations.instance_variable_get(:@marker).patched!
       end
     end
 
@@ -24,19 +25,8 @@ module BulletmarkRepairer
 
     def initialize(controller:, action:)
       @controller = controller
+      BulletmarkRepairer.controller = controller
       BulletmarkRepairer.action = action
-    end
-
-    def controller_file
-      @controller_file ||= "#{Rails.root}/app/controllers/#{@controller}_controller.rb"
-    end
-
-    def controller_corrector
-      @controller_corrector ||= Pathname.new(__FILE__).sub('/patcher.rb', '/controller_corrector.rb')
-    end
-
-    def default_corrector
-      @default_corrector ||= Pathname.new(__FILE__).sub('/patcher.rb', '/corrector.rb')
     end
   end
 end

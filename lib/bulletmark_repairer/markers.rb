@@ -41,13 +41,23 @@ module BulletmarkRepairer
       @associations += notification.instance_variable_get(:@associations)
     end
 
+    def index
+      "#{file_name}:#{line_no}"
+    end
+
     def n_plus_one_in_view?
-      @stacktraces.any? { |stacktrace| stacktrace.match?(%r{\A#{Rails.root}/app/views/[./\w]+:\d+:in `[\w]+'\z}) }
+      return @n_plus_one_in_view if defined?(@n_plus_one_in_view)
+
+      @n_plus_one_in_view = @stacktraces.any? { |stacktrace| stacktrace.match?(%r{\A#{Rails.root}/app/views/[./\w]+:\d+:in `[\w]+'\z}) }
     end
 
     def file_name
-      @stacktraces.any? { |stacktrace| stacktrace =~ %r{\A([./\w]+):\d+:in `[\w\s]+'\z} }
-      Regexp.last_match[1]
+      if n_plus_one_in_view?
+        BulletmarkRepairer.controller_file
+      else
+        @stacktraces.any? { |stacktrace| stacktrace =~ %r{\A([./\w]+):\d+:in `[\w\s]+'\z} }
+        Regexp.last_match[1]
+      end
     end
 
     def line_no
@@ -74,8 +84,12 @@ module BulletmarkRepairer
     def direct_associations
       return @direct_associations if @direct_associations
 
-      instance_variable_name_in_view
-      @direct_associations = BulletmarkRepairer.tracers[@instance_variable_finemale_index_in_view]
+      if n_plus_one_in_view?
+        instance_variable_name_in_view
+        @direct_associations = BulletmarkRepairer.tracers[@instance_variable_finemale_index_in_view]
+      else
+        @direct_associations = @associations
+      end
     end
 
     def patching?
