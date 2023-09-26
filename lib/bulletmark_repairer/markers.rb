@@ -34,7 +34,6 @@ module BulletmarkRepairer
       @base_class = notification.instance_variable_get(:@base_class)
       @stacktraces = notification.instance_variable_get(:@callers)
       @associations = notification.instance_variable_get(:@associations)
-      @patching = false
       @controller = controller
       @action = action
     end
@@ -93,18 +92,6 @@ module BulletmarkRepairer
       else
         @direct_associations = @associations
       end
-    end
-
-    def patching?
-      @patching == true
-    end
-
-    def patching!
-      @patching = true
-    end
-
-    def patched!
-      @patching = false
     end
   end
 end

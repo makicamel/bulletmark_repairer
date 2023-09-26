@@ -5,8 +5,6 @@ require 'forwardable'
 module BulletmarkRepairer
   class AssociationsBuilder
     class << self
-      attr_writer :patching_index
-
       def associations
         @associations ||= {}
       end
@@ -17,10 +15,6 @@ module BulletmarkRepairer
         else
           associations[marker.index] = Associations.new(marker)
         end
-      end
-
-      def patching_associations
-        associations[@patching_index]
       end
     end
   end
