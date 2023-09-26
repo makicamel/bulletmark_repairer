@@ -28,10 +28,6 @@ module BulletmarkRepairer
       @marker.instance_variable_name_in_view
     end
 
-    def action
-      @marker.instance_variable_get(:@action)
-    end
-
     def corrector(dir)
       BulletmarkRepairer::CorrectorBuilder.new(
         dir:,

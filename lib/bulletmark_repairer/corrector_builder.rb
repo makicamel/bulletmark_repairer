@@ -12,7 +12,7 @@ module BulletmarkRepairer
       @marker = marker
       @associations = associations
       @line_no = marker.line_no
-      @action = marker.instance_variable_get(:@action)
+      @action = marker.action
       @instance_variable_name = marker.instance_variable_name_in_view
     end
 

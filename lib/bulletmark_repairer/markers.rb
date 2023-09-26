@@ -28,7 +28,7 @@ module BulletmarkRepairer
   end
 
   class Marker
-    attr_reader :base_class, :associations
+    attr_reader :base_class, :associations, :action
 
     def initialize(notification, controller:, action:)
       @base_class = notification.instance_variable_get(:@base_class)
