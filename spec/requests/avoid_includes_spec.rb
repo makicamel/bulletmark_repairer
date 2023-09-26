@@ -17,9 +17,4 @@ RSpec.describe AvoidIncludesController do
   subject { get avoid_includes_path }
 
   it_behaves_like 'not patched'
-
-  it do
-    subject
-    expect(BulletmarkRepairer.markers.instance_variable_get(:@markers)).to eq({})
-  end
 end

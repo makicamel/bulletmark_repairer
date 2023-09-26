@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'forwardable'
+
 module BulletmarkRepairer
   class AssociationsBuilder
     class << self
@@ -24,14 +26,13 @@ module BulletmarkRepairer
   end
 
   class Associations
+    extend Forwardable
+
+    def_delegators :@marker, :file_name, :line_no
     attr_reader :associations
 
     def instance_variable_name
       @marker.instance_variable_name_in_view
-    end
-
-    def file_name
-      @marker.file_name
     end
 
     def corrector

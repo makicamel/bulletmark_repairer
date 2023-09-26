@@ -7,15 +7,14 @@ module BulletmarkRepairer
     end
 
     def call(env)
-      BulletmarkRepairer.markers = nil
       BulletmarkRepairer.tracers.clear
       BulletmarkRepairer.action = nil
       @app.call(env)
     ensure
-      BulletmarkRepairer.markers = Thread.current[:bullet_notification_collector].collection.to_a.dup
       begin
-        if BulletmarkRepairer.markers.present?
+        if Thread.current[:bullet_notification_collector].notifications_present?
           BulletmarkRepairer::Pathcer.execute(
+            notifications: Thread.current[:bullet_notification_collector],
             controller: env['action_dispatch.request.parameters']['controller'],
             action: env['action_dispatch.request.parameters']['action'].to_sym
           )

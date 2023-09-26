@@ -6,11 +6,11 @@ module BulletmarkRepairer
   class Markers
     extend Forwardable
 
-    def_delegators :@markers, :each, :present?
+    def_delegator :@markers, :each
 
     def initialize(notifications)
       @markers = {}
-      notifications&.each do |notification|
+      notifications.collection.to_a.each do |notification|
         next unless notification.is_a?(::Bullet::Notification::NPlusOneQuery)
 
         base_class = notification.instance_variable_get(:@base_class)
@@ -20,10 +20,6 @@ module BulletmarkRepairer
           @markers[base_class] = Marker.new(notification)
         end
       end
-    end
-
-    def patching_marker
-      @markers.select { |_, marker| marker.patching? }.first.last
     end
   end
 

@@ -4,12 +4,12 @@ require 'parser/runner/ruby_rewrite'
 
 module BulletmarkRepairer
   class Pathcer
-    def self.execute(controller:, action:)
-      new(controller:, action:).execute
+    def self.execute(notifications:, controller:, action:)
+      new(notifications:, controller:, action:).execute
     end
 
     def execute
-      BulletmarkRepairer.markers.each do |_base_class, marker|
+      @markers.each do |_base_class, marker|
         BulletmarkRepairer::AssociationsBuilder.build(marker)
       end
       BulletmarkRepairer::AssociationsBuilder.associations.each do |index, associations|
@@ -23,8 +23,8 @@ module BulletmarkRepairer
 
     private
 
-    def initialize(controller:, action:)
-      @controller = controller
+    def initialize(notifications:, controller:, action:)
+      @markers = Markers.new(notifications)
       BulletmarkRepairer.controller = controller
       BulletmarkRepairer.action = action
     end

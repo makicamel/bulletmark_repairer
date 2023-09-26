@@ -27,7 +27,7 @@ class Corrector < Parser::TreeRewriter
   end
 
   def line_no
-    BulletmarkRepairer.markers.patching_marker.line_no
+    BulletmarkRepairer::AssociationsBuilder.patching_associations.line_no
   end
 
   def associations
