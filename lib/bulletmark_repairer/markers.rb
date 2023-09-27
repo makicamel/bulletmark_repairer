@@ -28,7 +28,7 @@ module BulletmarkRepairer
   end
 
   class Marker
-    attr_reader :base_class, :associations, :action
+    attr_reader :base_class, :associations, :action, :file_name, :line_no, :instance_variable_name_in_view
 
     def initialize(notification, controller:, action:)
       @base_class = notification.instance_variable_get(:@base_class)
@@ -36,61 +36,60 @@ module BulletmarkRepairer
       @associations = notification.instance_variable_get(:@associations)
       @controller = controller
       @action = action
+      set_up
     end
 
     def add_association(notification)
       @associations += notification.instance_variable_get(:@associations)
     end
 
+    def direct_associations
+      return @direct_associations if @direct_associations
+
+      @direct_associations = if n_plus_one_in_view?
+                               BulletmarkRepairer.tracers[@instance_variable_finemale_index_in_view]
+                             else
+                               associations
+                             end
+    end
+
+    def n_plus_one_in_view?
+      @n_plus_one_in_view
+    end
+
     def index
       "#{file_name}:#{line_no}"
     end
 
-    def n_plus_one_in_view?
-      return @n_plus_one_in_view if defined?(@n_plus_one_in_view)
+    private
 
+    def set_up
       @n_plus_one_in_view = @stacktraces.any? { |stacktrace| stacktrace.match?(%r{\A#{Rails.root}/app/views/[./\w]+:\d+:in `[\w]+'\z}) }
-    end
 
-    def file_name
-      if n_plus_one_in_view?
-        "#{Rails.root}/app/controllers/#{@controller}_controller.rb"
-      else
-        @stacktraces.any? { |stacktrace| stacktrace =~ %r{\A([./\w]+):\d+:in `[\w\s]+'\z} }
-        Regexp.last_match[1]
+      @file_name = if n_plus_one_in_view?
+                     "#{Rails.root}/app/controllers/#{@controller}_controller.rb"
+                   else
+                     @stacktraces.any? { |stacktrace| stacktrace =~ %r{\A([./\w]+):\d+:in `[\w\s]+'\z} }
+                     Regexp.last_match[1]
+                   end
+
+      @stacktraces.index { |stacktrace| stacktrace.match?(%r{\A/[./\w]+:\d+:in `block in [\w]+'\z}) }.tap do |line_no_index|
+        @line_no = @stacktraces[line_no_index + 1].scan(%r{\A/[./\w]+:(\d+):in `[\w]+'\z}).flatten.first.to_i
       end
-    end
-
-    def line_no
-      return @line_no if @line_no
-
-      index = @stacktraces.index { |stacktrace| stacktrace.match?(%r{\A/[./\w]+:\d+:in `block in [\w]+'\z}) }
-      @line_no = @stacktraces[index + 1].scan(%r{\A/[./\w]+:(\d+):in `[\w]+'\z}).flatten.first.to_i
-    end
-
-    def instance_variable_name_in_view
-      return unless n_plus_one_in_view?
-      return @instance_variable_name_in_view if @instance_variable_name_in_view
-
-      stacktrace_index = @stacktraces.index do |stacktrace|
-        stacktrace =~ %r{\A(#{Rails.root}/app/views/[./\w]+):\d+:in `[\w]+'\z} && !Pathname.new(Regexp.last_match(1)).basename.to_s.start_with?('_')
-      end
-      view_file, yield_index = @stacktraces[stacktrace_index].scan(%r{\A(/[./\w]+):(\d+):in `[\w]+'\z}).flatten
-      File.open(view_file) do |f|
-        line = f.readlines[yield_index.to_i - 1]
-        @instance_variable_finemale_index_in_view = "#{view_file}:#{yield_index}"
-        @instance_variable_name_in_view = line.scan(/\b?(@[\w]+)\b?/).flatten.last
-      end
-    end
-
-    def direct_associations
-      return @direct_associations if @direct_associations
 
       if n_plus_one_in_view?
-        instance_variable_name_in_view
-        @direct_associations = BulletmarkRepairer.tracers[@instance_variable_finemale_index_in_view]
+        stacktrace_index = @stacktraces.index do |stacktrace|
+          stacktrace =~ %r{\A(#{Rails.root}/app/views/[./\w]+):\d+:in `[\w]+'\z} && !Pathname.new(Regexp.last_match(1)).basename.to_s.start_with?('_')
+        end
+        view_file, yield_index = @stacktraces[stacktrace_index].scan(%r{\A(/[./\w]+):(\d+):in `[\w]+'\z}).flatten
+        File.open(view_file) do |f|
+          line = f.readlines[yield_index.to_i - 1]
+          @instance_variable_name_in_view = line.scan(/\b?(@[\w]+)\b?/).flatten.last
+          @instance_variable_finemale_index_in_view = "#{view_file}:#{yield_index}"
+        end
       else
-        @direct_associations = @associations
+        @instance_variable_name_in_view = nil
+        @instance_variable_finemale_index_in_view = nil
       end
     end
   end
