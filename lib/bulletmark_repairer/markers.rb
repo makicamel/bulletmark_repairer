@@ -66,30 +66,29 @@ module BulletmarkRepairer
     def set_up
       @n_plus_one_in_view = @stacktraces.any? { |stacktrace| stacktrace.match?(%r{\A#{Rails.root}/app/views/[./\w]+:\d+:in `[\w]+'\z}) }
 
-      @file_name = if n_plus_one_in_view?
-                     "#{Rails.root}/app/controllers/#{@controller}_controller.rb"
-                   else
-                     @stacktraces.any? { |stacktrace| stacktrace =~ %r{\A([./\w]+):\d+:in `[\w\s]+'\z} }
-                     Regexp.last_match[1]
-                   end
+      if n_plus_one_in_view?
+        @file_name = "#{Rails.root}/app/controllers/#{@controller}_controller.rb"
+        @stacktraces
+          .index do |stacktrace|
+            stacktrace =~ %r{\A(#{Rails.root}/app/views/[./\w]+):\d+:in `[\w]+'\z} && !Pathname.new(Regexp.last_match(1)).basename.to_s.start_with?('_')
+          end.tap do |stacktrace_index|
+            view_file, yield_index = @stacktraces[stacktrace_index].scan(%r{\A(/[./\w]+):(\d+):in `[\w]+'\z}).flatten
+            File.open(view_file) do |f|
+              line = f.readlines[yield_index.to_i - 1]
+              @instance_variable_name_in_view = line.scan(/\b?(@[\w]+)\b?/).flatten.last
+              @instance_variable_finemale_index_in_view = "#{view_file}:#{yield_index}"
+            end
+          end
+      else
+        @stacktraces.any? { |stacktrace| stacktrace =~ %r{\A([./\w]+):\d+:in `[\w\s]+'\z} }.tap do
+          @file_name = Regexp.last_match[1]
+        end
+        @instance_variable_name_in_view = nil
+        @instance_variable_finemale_index_in_view = nil
+      end
 
       @stacktraces.index { |stacktrace| stacktrace.match?(%r{\A/[./\w]+:\d+:in `block in [\w]+'\z}) }.tap do |line_no_index|
         @line_no = @stacktraces[line_no_index + 1].scan(%r{\A/[./\w]+:(\d+):in `[\w]+'\z}).flatten.first.to_i
-      end
-
-      if n_plus_one_in_view?
-        stacktrace_index = @stacktraces.index do |stacktrace|
-          stacktrace =~ %r{\A(#{Rails.root}/app/views/[./\w]+):\d+:in `[\w]+'\z} && !Pathname.new(Regexp.last_match(1)).basename.to_s.start_with?('_')
-        end
-        view_file, yield_index = @stacktraces[stacktrace_index].scan(%r{\A(/[./\w]+):(\d+):in `[\w]+'\z}).flatten
-        File.open(view_file) do |f|
-          line = f.readlines[yield_index.to_i - 1]
-          @instance_variable_name_in_view = line.scan(/\b?(@[\w]+)\b?/).flatten.last
-          @instance_variable_finemale_index_in_view = "#{view_file}:#{yield_index}"
-        end
-      else
-        @instance_variable_name_in_view = nil
-        @instance_variable_finemale_index_in_view = nil
       end
     end
   end
