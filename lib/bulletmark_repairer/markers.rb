@@ -58,7 +58,7 @@ module BulletmarkRepairer
     end
 
     def index
-      "#{file_name}:#{line_no}"
+      @instance_variable_finemale_index_in_view || "#{file_name}:#{line_no}"
     end
 
     private
@@ -77,6 +77,7 @@ module BulletmarkRepairer
               line = f.readlines[yield_index.to_i - 1]
               @instance_variable_name_in_view = line.scan(/\b?(@[\w]+)\b?/).flatten.last
               @instance_variable_finemale_index_in_view = "#{view_file}:#{yield_index}"
+              @line_no = nil
             end
           end
       else
@@ -85,10 +86,9 @@ module BulletmarkRepairer
         end
         @instance_variable_name_in_view = nil
         @instance_variable_finemale_index_in_view = nil
-      end
-
-      @stacktraces.index { |stacktrace| stacktrace.match?(%r{\A/[./\w]+:\d+:in `block in [\w]+'\z}) }.tap do |line_no_index|
-        @line_no = @stacktraces[line_no_index + 1].scan(%r{\A/[./\w]+:(\d+):in `[\w]+'\z}).flatten.first.to_i
+        @stacktraces.index { |stacktrace| stacktrace.match?(%r{\A/[./\w]+:\d+:in `block in [\w]+'\z}) }.tap do |line_no_index|
+          @line_no = @stacktraces[line_no_index + 1].scan(%r{\A/[./\w]+:(\d+):in `[\w]+'\z}).flatten.first.to_i
+        end
       end
     end
   end
