@@ -38,15 +38,16 @@ module BulletmarkRepairer
 
     def initialize(marker)
       @marker = marker
+      @associations = {}
       if marker.direct_associations == marker.associations
-        @associations = marker.associations
+        @associations[:base] = marker.associations
       else
         key = marker.base_class.underscore
-        @associations = if key.singularize.in?(marker.associations)
-                          { key.singularize.to_sym => marker.associations }
-                        else
-                          { key.pluralize.to_sym => marker.associations }
-                        end
+        @associations[:base] = if key.singularize.in?(marker.associations)
+                                 { key.singularize.to_sym => marker.associations }
+                               else
+                                 { key.pluralize.to_sym => marker.associations }
+                               end
       end
     end
   end

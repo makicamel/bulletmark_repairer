@@ -23,12 +23,12 @@ module BulletmarkRepairer
         src = File.read(corrector)
         if @marker.n_plus_one_in_view?
           src
-            .sub!(ASSOCIATIONS, @associations.to_s)
+            .sub!(ASSOCIATIONS, @associations[:base].to_s)
             .sub!(ACTION, @action)
             .sub!(INSTANCE_VARIABLE_NAME, @instance_variable_name)
         else
           src
-            .sub!(ASSOCIATIONS, @associations.to_s)
+            .sub!(ASSOCIATIONS, @associations[:base].to_s)
             .sub!(LINE_NO, @line_no.to_s)
         end
         f.puts src
