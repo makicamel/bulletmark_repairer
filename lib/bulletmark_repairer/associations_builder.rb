@@ -49,9 +49,19 @@ module BulletmarkRepairer
     # @return [Hash, nil]
     def build_associations!(marker:, associations:, parent_key:)
       key = formed_key(marker:, associations:)
-      return unless key
+      if key
+        modify_value(key:, marker:, parent_key:)
+      else
+        associations.each do |association_values|
+          next unless association_values.is_a?(Hash)
 
-      modify_value(key:, marker:, parent_key:)
+          association_values.each do |key, value|
+            new_key = formed_key(marker:, associations: { key => value })
+            values = value.is_a?(Array) ? value : [value]
+            build_associations!(marker:, associations: { key => values }, parent_key: new_key)
+          end
+        end
+      end
     end
 
     # @return [Symbol, nil]
