@@ -33,5 +33,29 @@ RSpec.describe BulletmarkRepairer::Associations do
           .to({ base: { actors: [:company] } })
       end
     end
+
+    context 'when parent association is nested and value is an array' do
+      let(:parent_key) { :base }
+      let(:parent_attributes) { { 'Play' => { actors: [:company] } } }
+      let(:child_attributes) { { 'Actor' => [:works] } }
+
+      it do
+        expect { subject }.to change { associations.instance_variable_get(:@associations) }
+          .from({ base: { actors: [:company] } })
+          .to({ base: { actors: %i[company works] } })
+      end
+    end
+
+    context 'when parent association is nested and value is not an array' do
+      let(:parent_key) { :base }
+      let(:parent_attributes) { { 'Play' => { actors: :company } } }
+      let(:child_attributes) { { 'Actor' => [:works] } }
+
+      it do
+        expect { subject }.to change { associations.instance_variable_get(:@associations) }
+          .from({ base: { actors: :company } })
+          .to({ base: { actors: %i[company works] } })
+      end
+    end
   end
 end

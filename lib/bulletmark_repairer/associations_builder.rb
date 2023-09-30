@@ -51,16 +51,43 @@ module BulletmarkRepairer
       key = formed_key(marker:, associations:)
       return unless key
 
-      @associations[parent_key] = { key => marker.associations }
+      @associations[parent_key] = { key => formed_value!(key:, marker:, parent_key:) }
     end
 
     # @return [Symbol, nil]
     def formed_key(marker:, associations:)
       key = marker.base_class.underscore
-      if key.singularize.to_sym.in?(associations)
-        key.singularize.to_sym
-      else
-        key.pluralize.to_sym.in?(associations) ? key.pluralize.to_sym : nil
+      case associations
+      when Hash
+        if key.singularize.to_sym == associations.keys.first
+          key.singularize.to_sym
+        else
+          key.pluralize.to_sym == associations.keys.first ? key.pluralize.to_sym : nil
+        end
+      when Array
+        if key.singularize.to_sym.in?(associations)
+          key.singularize.to_sym
+        else
+          key.pluralize.to_sym.in?(associations) ? key.pluralize.to_sym : nil
+        end
+      end
+    end
+
+    # @return [Array]
+    def formed_value!(key:, marker:, parent_key:)
+      case @associations[parent_key]
+      when Hash
+        if @associations[parent_key][key].is_a?(Array)
+          @associations[parent_key][key] + marker.associations
+        else
+          [@associations[parent_key][key], *marker.associations]
+        end
+      else # Array, Symbol, String
+        if @associations[parent_key].is_a?(Array)
+          @associations[parent_key].tap { |a| a.delete(key) } + marker.associations
+        else
+          marker.associations
+        end
       end
     end
   end
