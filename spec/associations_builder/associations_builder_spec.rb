@@ -18,7 +18,7 @@ RSpec.describe BulletmarkRepairer::Associations do
       it do
         expect { subject }.to change { associations.instance_variable_get(:@associations) }
           .from({ base: [:actor] })
-          .to({ base: { actor: [:company] } })
+          .to({ base: [{ actor: [:company] }] })
       end
     end
 
@@ -30,7 +30,7 @@ RSpec.describe BulletmarkRepairer::Associations do
       it do
         expect { subject }.to change { associations.instance_variable_get(:@associations) }
           .from({ base: [:actors] })
-          .to({ base: { actors: [:company] } })
+          .to({ base: [{ actors: [:company] }] })
       end
     end
 
@@ -55,6 +55,18 @@ RSpec.describe BulletmarkRepairer::Associations do
         expect { subject }.to change { associations.instance_variable_get(:@associations) }
           .from({ base: { actors: :company } })
           .to({ base: { actors: %i[company works] } })
+      end
+    end
+
+    context 'when parent association has multiple associations' do
+      let(:parent_key) { :base }
+      let(:parent_attributes) { { 'Play' => %i[actors staffs] } }
+      let(:child_attributes) { { 'Actor' => [:company] } }
+
+      it do
+        expect { subject }.to change { associations.instance_variable_get(:@associations) }
+          .from({ base: %i[actors staffs] })
+          .to({ base: [:staffs, { actors: [:company] }] })
       end
     end
   end

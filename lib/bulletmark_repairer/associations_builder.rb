@@ -51,7 +51,7 @@ module BulletmarkRepairer
       key = formed_key(marker:, associations:)
       return unless key
 
-      @associations[parent_key] = { key => formed_value!(key:, marker:, parent_key:) }
+      modify_value(key:, marker:, parent_key:)
     end
 
     # @return [Symbol, nil]
@@ -73,21 +73,20 @@ module BulletmarkRepairer
       end
     end
 
-    # @return [Array]
-    def formed_value!(key:, marker:, parent_key:)
+    def modify_value(key:, marker:, parent_key:)
       case @associations[parent_key]
       when Hash
-        if @associations[parent_key][key].is_a?(Array)
-          @associations[parent_key][key] + marker.associations
-        else
-          [@associations[parent_key][key], *marker.associations]
-        end
-      else # Array, Symbol, String
-        if @associations[parent_key].is_a?(Array)
-          @associations[parent_key].tap { |a| a.delete(key) } + marker.associations
-        else
-          marker.associations
-        end
+        value = if @associations[parent_key][key].is_a?(Array)
+                  @associations[parent_key][key] + marker.associations
+                else
+                  [@associations[parent_key][key], *marker.associations]
+                end
+        @associations[parent_key][key] = value
+      when Array
+        @associations[parent_key].delete(key)
+        @associations[parent_key].append(key => marker.associations)
+      else # Symbol, String
+        @associations[parent_key] = { key => marker.associations }
       end
     end
   end
