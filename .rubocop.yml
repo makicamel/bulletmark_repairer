@@ -23,10 +23,12 @@ Metrics/AbcSize:
 Metrics/CyclomaticComplexity:
   AllowedMethods:
     - insert_includes
+    - formed_key
 
 Metrics/PerceivedComplexity:
   AllowedMethods:
     - insert_includes
+    - formed_key
 
 Metrics/BlockLength:
   Enabled: false
