@@ -6,7 +6,7 @@ module BulletmarkRepairer
   class AssociationsBuilder
     def build(marker)
       if associations[marker.index]
-        # TODO
+        associations[marker.index].add(marker)
       else
         associations[marker.index] = Associations.new(marker)
       end
@@ -21,6 +21,10 @@ module BulletmarkRepairer
     extend Forwardable
 
     def_delegators :@marker, :file_name
+
+    def add(child_marker)
+      build_associations!(marker: child_marker, associations: @marker.associations, parent_keys: [:base])
+    end
 
     def instance_variable_name
       @marker.instance_variable_name_in_view

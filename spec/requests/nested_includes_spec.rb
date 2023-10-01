@@ -12,9 +12,9 @@ RSpec.describe NestedIncludesController do
   end
   let(:patched_src) do
     <<-SRC
-    def index
-      @plays = Play.all.includes(actors: :company)
-    end
+  def index
+    @plays = Play.all.includes([{:actors=>[:company]}])
+  end
     SRC
   end
 
@@ -25,5 +25,5 @@ RSpec.describe NestedIncludesController do
 
   subject { get nested_includes_path }
 
-  # it_behaves_like 'correctly patched'
+  it_behaves_like 'correctly patched'
 end
