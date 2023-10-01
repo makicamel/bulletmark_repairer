@@ -5,8 +5,9 @@ require 'parser/current'
 module BulletmarkRepairer
   module ActiveRecord
     module Core
+      # TODO: compatible under Ruby 3.2
       def const_added(const_name)
-        if const_name == :GeneratedAssociationMethods
+        if const_name == :GeneratedAssociationMethods && try(:name)
           mod = "#{self}::#{const_name}".constantize
           mod.singleton_class.prepend(
             Module.new do
