@@ -70,10 +70,10 @@ module BulletmarkRepairer
       key = marker.base_class.underscore
       case associations
       when Hash
-        if key.singularize.to_sym == associations.keys.first
+        if key.singularize.to_sym == associations.keys.first || key.singularize.to_sym.in?(associations.values.flatten)
           key.singularize.to_sym
         else
-          key.pluralize.to_sym == associations.keys.first ? key.pluralize.to_sym : nil
+          key.pluralize.to_sym == associations.keys.first || key.pluralize.to_sym.in?(associations.values.flatten) ? key.pluralize.to_sym : nil
         end
       when Array
         if key.singularize.to_sym.in?(associations)
@@ -93,12 +93,24 @@ module BulletmarkRepairer
     def modify_value(key:, marker:, parent_keys:)
       case @associations.dig(*parent_keys)
       when Hash
-        value = if @associations.dig(*parent_keys)[key].is_a?(Array)
-                  @associations.dig(*parent_keys)[key] + marker.associations
-                else
-                  [@associations.dig(*parent_keys)[key], *marker.associations]
-                end
-        @associations.dig(*parent_keys)[key] = value
+        # when key is in value
+        if @associations.dig(*parent_keys)[key].nil?
+          last_key = @associations.dig(*parent_keys).keys.first
+          if @associations.dig(*parent_keys)[last_key].is_a?(Array)
+            @associations.dig(*parent_keys)[last_key].delete(key)
+            @associations.dig(*parent_keys)[last_key].append(key => marker.associations)
+          else
+            @associations.dig(*parent_keys)[last_key] = { key => marker.associations }
+          end
+        # when key is in key
+        else
+          value = if @associations.dig(*parent_keys)[key].is_a?(Array)
+                    @associations.dig(*parent_keys)[key] + marker.associations
+                  else
+                    [@associations.dig(*parent_keys)[key], *marker.associations]
+                  end
+          @associations.dig(*parent_keys)[key] = value
+        end
       when Array
         @associations.dig(*parent_keys).delete(key)
         @associations.dig(*parent_keys).append(key => marker.associations)
