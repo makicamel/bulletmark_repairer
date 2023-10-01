@@ -10,5 +10,6 @@ BulletmarkRepairerTestApp::Application.routes.draw do
   resources :partial_views, only: [:index]
   resources :multiple_base_classes, only: [:index]
   resources :nested_includes, only: [:index]
+  resources :another_name_associations, only: [:index]
   resources :avoid_includes, only: [:index]
 end

@@ -27,6 +27,7 @@ CreateAllTables.up
 class Play < ActiveRecord::Base
   has_many :play_actors
   has_many :actors, through: :play_actors
+  has_many :main_actors, through: :play_actors, source: :actor
 end
 
 class PlayActor < ActiveRecord::Base
