@@ -42,23 +42,24 @@ module BulletmarkRepairer
       if marker.direct_associations == marker.associations
         @associations[:base] = marker.associations
       else
-        build_associations!(marker:, associations: marker.associations, parent_key: :base)
+        build_associations!(marker:, associations: marker.associations, parent_keys: [:base])
       end
     end
 
     # @return [Hash, nil]
-    def build_associations!(marker:, associations:, parent_key:)
+    def build_associations!(marker:, associations:, parent_keys:)
       key = formed_key(marker:, associations:)
       if key
-        modify_value(key:, marker:, parent_key:)
+        modify_value(key:, marker:, parent_keys:)
       else
+        new_parent_keys = parent_keys
+        new_parent_keys.append(0) if associations.is_a?(Array)
         associations.each do |association_values|
           next unless association_values.is_a?(Hash)
 
           association_values.each do |key, value|
-            new_key = formed_key(marker:, associations: { key => value })
             values = value.is_a?(Array) ? value : [value]
-            build_associations!(marker:, associations: { key => values }, parent_key: new_key)
+            build_associations!(marker:, associations: { key => values }, parent_keys: new_parent_keys)
           end
         end
       end
@@ -80,23 +81,30 @@ module BulletmarkRepairer
         else
           key.pluralize.to_sym.in?(associations) ? key.pluralize.to_sym : nil
         end
+      else # Symbol, String
+        if key.singularize.to_sym == associations
+          key.singularize.to_sym
+        else
+          key.pluralize.to_sym == associations ? key.pluralize.to_sym : nil
+        end
       end
     end
 
-    def modify_value(key:, marker:, parent_key:)
-      case @associations[parent_key]
+    def modify_value(key:, marker:, parent_keys:)
+      case @associations.dig(*parent_keys)
       when Hash
-        value = if @associations[parent_key][key].is_a?(Array)
-                  @associations[parent_key][key] + marker.associations
+        value = if @associations.dig(*parent_keys)[key].is_a?(Array)
+                  @associations.dig(*parent_keys)[key] + marker.associations
                 else
-                  [@associations[parent_key][key], *marker.associations]
+                  [@associations.dig(*parent_keys)[key], *marker.associations]
                 end
-        @associations[parent_key][key] = value
+        @associations.dig(*parent_keys)[key] = value
       when Array
-        @associations[parent_key].delete(key)
-        @associations[parent_key].append(key => marker.associations)
+        @associations.dig(*parent_keys).delete(key)
+        @associations.dig(*parent_keys).append(key => marker.associations)
       else # Symbol, String
-        @associations[parent_key] = { key => marker.associations }
+        last_key = parent_keys.slice!(-1)
+        @associations.dig(*parent_keys)[last_key] = { key => marker.associations }
       end
     end
   end

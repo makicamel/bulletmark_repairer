@@ -8,10 +8,10 @@ RSpec.describe BulletmarkRepairer::Associations do
     let(:parent_marker) { double(:marker, base_class: parent_attributes.keys.first, associations: parent_attributes.values.first, direct_associations: parent_attributes.values.first) }
     let(:child_marker) { double(:marker, base_class: child_attributes.keys.first, associations: child_attributes.values.first) }
 
-    subject { associations.__send__(:build_associations!, marker: child_marker, associations: parent_marker.associations, parent_key:) }
+    subject { associations.__send__(:build_associations!, marker: child_marker, associations: parent_marker.associations, parent_keys:) }
 
     context 'simple pattern' do
-      let(:parent_key) { :base }
+      let(:parent_keys) { [:base] }
       let(:parent_attributes) { { 'Play' => [:actor] } }
       let(:child_attributes) { { 'Actor' => [:company] } }
 
@@ -23,7 +23,7 @@ RSpec.describe BulletmarkRepairer::Associations do
     end
 
     context 'when parent association is pluralized' do
-      let(:parent_key) { :base }
+      let(:parent_keys) { [:base] }
       let(:parent_attributes) { { 'Play' => [:actors] } }
       let(:child_attributes) { { 'Actor' => [:company] } }
 
@@ -34,8 +34,8 @@ RSpec.describe BulletmarkRepairer::Associations do
       end
     end
 
-    context 'when parent association is nested and value is an array' do
-      let(:parent_key) { :base }
+    context 'when parent association has nested associations and value is an array' do
+      let(:parent_keys) { [:base] }
       let(:parent_attributes) { { 'Play' => { actors: [:company] } } }
       let(:child_attributes) { { 'Actor' => [:works] } }
 
@@ -46,8 +46,8 @@ RSpec.describe BulletmarkRepairer::Associations do
       end
     end
 
-    context 'when parent association is nested and value is not an array' do
-      let(:parent_key) { :base }
+    context 'when parent association has nested associations and value is not an array' do
+      let(:parent_keys) { [:base] }
       let(:parent_attributes) { { 'Play' => { actors: :company } } }
       let(:child_attributes) { { 'Actor' => [:works] } }
 
@@ -59,7 +59,7 @@ RSpec.describe BulletmarkRepairer::Associations do
     end
 
     context 'when parent association has multiple associations' do
-      let(:parent_key) { :base }
+      let(:parent_keys) { [:base] }
       let(:parent_attributes) { { 'Play' => %i[actors staffs] } }
       let(:child_attributes) { { 'Actor' => [:company] } }
 
@@ -67,6 +67,18 @@ RSpec.describe BulletmarkRepairer::Associations do
         expect { subject }.to change { associations.instance_variable_get(:@associations) }
           .from({ base: %i[actors staffs] })
           .to({ base: [:staffs, { actors: [:company] }] })
+      end
+    end
+
+    context 'when parent association has nested associations and multiple associations' do
+      let(:parent_keys) { [:base] }
+      let(:parent_attributes) { { 'Play' => [{ actors: :company }, :staffs] } }
+      let(:child_attributes) { { 'Actor' => [:works] } }
+
+      it do
+        expect { subject }.to change { associations.instance_variable_get(:@associations) }
+          .from({ base: [{ actors: :company }, :staffs] })
+          .to({ base: [{ actors: %i[company works] }, :staffs] })
       end
     end
   end
