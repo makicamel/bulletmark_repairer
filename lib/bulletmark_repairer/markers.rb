@@ -68,16 +68,23 @@ module BulletmarkRepairer
 
       if n_plus_one_in_view?
         @file_name = "#{Rails.root}/app/controllers/#{@controller}_controller.rb"
-        stacktrace_index = @stacktraces.index do |stacktrace|
+        view_file_index = @stacktraces.index do |stacktrace|
           stacktrace =~ %r{\A(#{Rails.root}/app/views/[./\w]+):\d+:in `[\w]+'\z} && !Pathname.new(Regexp.last_match(1)).basename.to_s.start_with?('_')
         end
-        view_file, yield_index = @stacktraces[stacktrace_index].scan(%r{\A(/[./\w]+):(\d+):in `[\w]+'\z}).flatten
+        view_file, view_yield_index = @stacktraces[view_file_index].scan(%r{\A(/[./\w]+):(\d+):in `[\w]+'\z}).flatten
         File.open(view_file) do |f|
-          line = f.readlines[yield_index.to_i - 1]
+          line = f.readlines[view_yield_index.to_i - 1]
           @instance_variable_name_in_view = line.scan(/\b?(@[\w]+)\b?/).flatten.last
-          @instance_variable_finemale_index_in_view = "#{view_file}:#{yield_index}"
-          @line_no = nil
         end
+
+        @stacktraces.index do |stacktrace|
+          stacktrace =~ %r{\A(#{Rails.root}/app/views/[./\w]+):(\d+):in `[\w\s]+'\z}
+        end
+        n_plus_one_file = Regexp.last_match[1]
+        n_plus_one_index = Regexp.last_match[2]
+        @instance_variable_finemale_index_in_view = "#{n_plus_one_file}:#{n_plus_one_index}"
+
+        @line_no = nil
       else
         @stacktraces.any? { |stacktrace| stacktrace =~ %r{\A([./\w]+):\d+:in `[\w\s]+'\z} }.tap do
           @file_name = Regexp.last_match[1]
