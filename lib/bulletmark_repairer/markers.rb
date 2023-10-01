@@ -77,8 +77,11 @@ module BulletmarkRepairer
           @instance_variable_name_in_view = line.scan(/\b?(@[\w]+)\b?/).flatten.last
         end
 
-        @stacktraces.index do |stacktrace|
-          stacktrace =~ %r{\A(#{Rails.root}/app/views/[./\w]+):(\d+):in `[\w\s]+'\z}
+        @stacktraces.inject(false) do |first_matched, stacktrace|
+          matched = stacktrace =~ %r{\A(#{Rails.root}/app/views/[./\w]+):(\d+):in `[\w\s]+'\z}
+          break if matched && first_matched
+
+          matched
         end
         n_plus_one_file = Regexp.last_match[1]
         n_plus_one_index = Regexp.last_match[2]

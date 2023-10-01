@@ -31,7 +31,7 @@ module BulletmarkRepairer
       insert_after node.location.name,
                    <<-SRC
           \n
-          filename_index = caller.grep(%r{#{Rails.root}}).first.scan(%r{\\A([./\\w]+:\\d+):in `[\\w\\s]+'\\z}).flatten.first
+          filename_index = caller.grep(%r{#{Rails.root}}).second.scan(%r{\\A([./\\w]+:\\d+):in `[\\w\\s]+'\\z}).flatten.first
           BulletmarkRepairer.tracers[filename_index] |= [__method__]
                    SRC
     end
