@@ -24,11 +24,13 @@ Metrics/CyclomaticComplexity:
   AllowedMethods:
     - insert_includes
     - formed_key
+    - set_up
 
 Metrics/PerceivedComplexity:
   AllowedMethods:
     - insert_includes
     - formed_key
+    - set_up
 
 Metrics/BlockLength:
   Enabled: false
