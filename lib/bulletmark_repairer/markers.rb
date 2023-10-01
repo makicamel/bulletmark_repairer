@@ -47,7 +47,7 @@ module BulletmarkRepairer
       return @direct_associations if @direct_associations
 
       @direct_associations = if n_plus_one_in_view?
-                               BulletmarkRepairer.tracers[@instance_variable_finemale_index_in_view]
+                               BulletmarkRepairer.tracers[@instance_variable_finename_index_in_view]
                              else
                                associations
                              end
@@ -58,7 +58,7 @@ module BulletmarkRepairer
     end
 
     def index
-      @instance_variable_finemale_index_in_view || "#{file_name}:#{line_no}"
+      @instance_variable_finename_index_in_view || "#{file_name}:#{line_no}"
     end
 
     private
@@ -85,7 +85,7 @@ module BulletmarkRepairer
         end
         n_plus_one_file = Regexp.last_match[1]
         n_plus_one_index = Regexp.last_match[2]
-        @instance_variable_finemale_index_in_view = "#{n_plus_one_file}:#{n_plus_one_index}"
+        @instance_variable_finename_index_in_view = "#{n_plus_one_file}:#{n_plus_one_index}"
 
         @line_no = nil
       else
@@ -93,7 +93,7 @@ module BulletmarkRepairer
           @file_name = Regexp.last_match[1]
         end
         @instance_variable_name_in_view = nil
-        @instance_variable_finemale_index_in_view = nil
+        @instance_variable_finename_index_in_view = nil
         @stacktraces.index { |stacktrace| stacktrace.match?(%r{\A/[./\w]+:\d+:in `block in [\w]+'\z}) }.tap do |line_no_index|
           @line_no = @stacktraces[line_no_index + 1].scan(%r{\A/[./\w]+:(\d+):in `[\w]+'\z}).flatten.first.to_i
         end
