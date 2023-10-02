@@ -7,7 +7,7 @@ module BulletmarkRepairer
     end
 
     def call(env)
-      BulletmarkRepairer.tracers.clear
+      BulletmarkRepairer.reset_associations
       @app.call(env)
     ensure
       begin
