@@ -66,12 +66,7 @@ module BulletmarkRepairer
           line = f.readlines[view_yield_index.to_i - 1]
           @instance_variable_name_in_view = line.scan(/\b?(@[\w]+)\b?/).flatten.last
         end
-
-        @stacktraces.any? { |stacktrace| stacktrace =~ %r{\A(#{Rails.root}/app/views/[./\w]+):(\d+):in `[\w\s]+'\z} }.tap do
-          view_file_name = Regexp.last_match[1]
-          line_no = Regexp.last_match[2]
-          @instance_variable_finename_index_in_view = "#{view_file_name}:#{line_no}"
-        end
+        @instance_variable_finename_index_in_view = "#{view_file}:#{view_yield_index}"
         @line_no = nil
       else
         @stacktraces.any? { |stacktrace| stacktrace =~ %r{\A([./\w]+):\d+:in `[\w\s]+'\z} }.tap do
