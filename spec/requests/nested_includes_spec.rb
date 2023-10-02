@@ -7,13 +7,23 @@ RSpec.describe NestedIncludesController do
     <<-SRC
   def index
     @plays = Play.all
+    @plays.each do |play|
+      play.actors.each do |actor|
+        actor.company.name
+      end
+    end
   end
     SRC
   end
   let(:patched_src) do
     <<-SRC
   def index
-    @plays = Play.all.includes([{:actors=>[:company]}])
+    @plays = Play.all
+    @plays.includes([{:actors=>[:company]}]).each do |play|
+      play.actors.each do |actor|
+        actor.company.name
+      end
+    end
   end
     SRC
   end
