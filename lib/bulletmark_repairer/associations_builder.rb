@@ -42,12 +42,7 @@ module BulletmarkRepairer
 
     def initialize(marker)
       @marker = marker
-      @associations = {}
-      if marker.direct_associations == marker.associations
-        @associations[:base] = marker.associations
-      else
-        build_associations!(marker:, associations: marker.associations, parent_keys: [:base])
-      end
+      @associations = { base: marker.associations }
     end
 
     # @return [Hash, nil]

@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe BulletmarkRepairer::Associations do
   describe '#build_associations!' do
     let(:associations) { described_class.new(parent_marker) }
-    let(:parent_marker) { double(:marker, base_class: parent_attributes.keys.first, associations: parent_attributes.values.first, direct_associations: parent_attributes.values.first) }
+    let(:parent_marker) { double(:marker, base_class: parent_attributes.keys.first, associations: parent_attributes.values.first) }
     let(:child_marker) { double(:marker, base_class: child_attributes.keys.first, associations: child_attributes.values.first) }
 
     subject { associations.__send__(:build_associations!, marker: child_marker, associations: parent_marker.associations, parent_keys:) }
