@@ -16,14 +16,17 @@ module BulletmarkRepairer
   class ApplicationAssociations
     def key(target_klass_name, base_klass_name, candidates)
       key = target_klass_name.underscore
-      matched_candidate = (candidates - (candidates - @associations[base_klass_name][:associations])).first
+      matched_candidates = candidates - (candidates - @associations[base_klass_name][:associations])
       if key.pluralize.to_sym.in?(candidates)
         key.pluralize.to_sym
       elsif key.singularize.to_sym.in?(candidates)
         key.singularize.to_sym
-      elsif (matched_candidate && key.pluralize.to_sym.in?(@associations[base_klass_name][:aliases][matched_candidate])) ||
-            (matched_candidate && key.singularize.to_sym.in?(@associations[base_klass_name][:aliases][matched_candidate]))
-        matched_candidate
+      else
+        index = matched_candidates.index do |matched_candidate|
+          key.pluralize.to_sym.in?(@associations[base_klass_name][:aliases][matched_candidate]) ||
+            key.singularize.to_sym.in?(@associations[base_klass_name][:aliases][matched_candidate])
+        end
+        matched_candidates[index] if index
       end
     end
 
