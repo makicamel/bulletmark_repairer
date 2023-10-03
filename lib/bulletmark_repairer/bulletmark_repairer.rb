@@ -2,28 +2,51 @@
 
 module BulletmarkRepairer
   def self.associations
-    return @associations if @associations.present?
+    @associations ||= ApplicationAssociations.new
+  end
 
-    @associations = Hash.new { |hash, k| hash[k] = [] }
-    ::ActiveRecord::Base
-      .descendants
-      .select { |klass| klass.respond_to?(:reflect_on_all_associations) }
-      .each do |klass|
-        klass.reflect_on_all_associations.each do |association_instance|
-          association = if association_instance.instance_of?(ActiveRecord::Reflection::ThroughReflection)
-                          association_instance.__send__(:delegate_reflection)
-                        else
-                          association_instance
-                        end
-          klass_name = association.active_record.name
-          association_name = association.name
-          @associations[klass_name] |= [association_name]
-        end
-      end
-    @associations
+  def self.key(target_klass_name, base_klass_name, candidates)
+    associations.key(target_klass_name, base_klass_name, candidates)
   end
 
   def self.reset_associations
     @associations = nil
+  end
+
+  class ApplicationAssociations
+    def key(target_klass_name, base_klass_name, candidates)
+      key = target_klass_name.underscore
+      matched_candidate = (candidates - (candidates - @associations[base_klass_name][:associations])).first
+      if key.pluralize.to_sym.in?(candidates)
+        key.pluralize.to_sym
+      elsif key.singularize.to_sym.in?(candidates)
+        key.singularize.to_sym
+      elsif (matched_candidate && key.pluralize.to_sym.in?(@associations[base_klass_name][:aliases][matched_candidate])) ||
+            (matched_candidate && key.singularize.to_sym.in?(@associations[base_klass_name][:aliases][matched_candidate]))
+        matched_candidate
+      end
+    end
+
+    private
+
+    def initialize
+      blank_array_hash = Hash.new { |hash, key| hash[key] = [] }
+      @associations = Hash.new { |hash, key| hash[key] = { associations: [], aliases: blank_array_hash } }
+      ::ActiveRecord::Base
+        .descendants
+        .select { |klass| klass.respond_to?(:reflect_on_all_associations) }
+        .each do |klass|
+          klass.reflect_on_all_associations.each do |association_instance|
+            association = association_instance.respond_to?(:delegate_reflection) ? association_instance.delegate_reflection : association_instance
+            klass_name = association.active_record.name
+            association_name = association.name
+            @associations[klass_name][:associations] |= [association_name]
+            next unless association.options[:source]
+
+            alias_name = association.instance_of?(ActiveRecord::Reflection::HasManyReflection) ? association.options[:source].to_s.pluralize.to_sym : association.options[:source]
+            @associations[klass_name][:aliases][association.name] |= [alias_name]
+          end
+        end
+    end
   end
 end

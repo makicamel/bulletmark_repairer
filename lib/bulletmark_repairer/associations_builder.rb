@@ -66,26 +66,14 @@ module BulletmarkRepairer
 
     # @return [Symbol, nil]
     def formed_key(marker:, associations:)
-      key = marker.base_class.underscore
       case associations
       when Hash
-        if key.singularize.to_sym == associations.keys.first || key.singularize.to_sym.in?(associations.values.flatten)
-          key.singularize.to_sym
-        else
-          key.pluralize.to_sym == associations.keys.first || key.pluralize.to_sym.in?(associations.values.flatten) ? key.pluralize.to_sym : nil
-        end
+        BulletmarkRepairer.key(marker.base_class, @marker.base_class, associations.keys) ||
+          BulletmarkRepairer.key(marker.base_class, @marker.base_class, associations.values.flatten)
       when Array
-        if key.singularize.to_sym.in?(associations)
-          key.singularize.to_sym
-        else
-          key.pluralize.to_sym.in?(associations) ? key.pluralize.to_sym : nil
-        end
+        BulletmarkRepairer.key(marker.base_class, @marker.base_class, associations)
       else # Symbol, String
-        if key.singularize.to_sym == associations
-          key.singularize.to_sym
-        else
-          key.pluralize.to_sym == associations ? key.pluralize.to_sym : nil
-        end
+        BulletmarkRepairer.key(marker.base_class, @marker.base_class, [associations])
       end
     end
 
