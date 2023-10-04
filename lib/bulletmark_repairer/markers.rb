@@ -69,14 +69,21 @@ module BulletmarkRepairer
         @instance_variable_finename_index_in_view = "#{view_file}:#{view_yield_index}"
         @line_no = nil
       else
+        # TODO: Ignore controllers list
+        # TODO: Allow namespeces list
         if @stacktraces.any? { |stacktrace| stacktrace =~ %r{\A(#{Rails.root}/app/controllers/[./\w]+):\d+:in `[\w\s]+'\z} } ||
            @stacktraces.any? { |stacktrace| stacktrace =~ %r{\A([./\w]+):\d+:in `[\w\s]+'\z} }
           @file_name = Regexp.last_match[1]
         end
         @instance_variable_name_in_view = nil
         @instance_variable_finename_index_in_view = nil
-        @stacktraces.index { |stacktrace| stacktrace.match?(/\A#{@file_name}+:\d+:in `block in [\w]+'\z/) }.tap do |line_no_index|
+        # TODO: Patch even if it's not in block
+        line_no_index = @stacktraces.index { |stacktrace| stacktrace.match?(/\A#{@file_name}+:\d+:in `block in [\w]+'\z/) }
+        if line_no_index
           @line_no = @stacktraces[line_no_index + 1].scan(%r{\A/[./\w]+:(\d+):in `[\w]+'\z}).flatten.first.to_i
+        else
+          @file_name = nil
+          @line_no = nil
         end
       end
     end
