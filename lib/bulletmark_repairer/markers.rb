@@ -62,11 +62,19 @@ module BulletmarkRepairer
           stacktrace =~ %r{\A(#{Rails.root}/app/views/[./\w]+):\d+:in `[\w]+'\z} && !Pathname.new(Regexp.last_match(1)).basename.to_s.start_with?('_')
         end
         view_file, view_yield_index = @stacktraces[view_file_index].scan(%r{\A(/[./\w]+):(\d+):in `[\w]+'\z}).flatten
+        view_yield_index = view_yield_index.to_i
+        # TODO: Compile views
         File.open(view_file) do |f|
-          line = f.readlines[view_yield_index.to_i - 1]
-          @instance_variable_name_in_view = line.scan(/\b?(@[\w]+)\b?/).flatten.last
+          lines = f.readlines
+          loop do
+            break if @instance_variable_name_in_view || view_yield_index.zero?
+
+            view_yield_index -= 1
+            line = lines[view_yield_index]
+            @instance_variable_name_in_view = line&.scan(/\b?(@[\w]+)\b?/)&.flatten&.last
+          end
         end
-        @instance_variable_finename_index_in_view = "#{view_file}:#{view_yield_index}"
+        @instance_variable_finename_index_in_view = view_yield_index.negative? ? ':' : "#{view_file}:#{view_yield_index}"
         @line_no = nil
       else
         # TODO: Ignore controllers list
