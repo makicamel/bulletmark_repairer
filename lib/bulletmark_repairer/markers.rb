@@ -57,6 +57,7 @@ module BulletmarkRepairer
       @n_plus_one_in_view = @stacktraces.any? { |stacktrace| stacktrace.match?(%r{\A#{Rails.root}/app/views/[./\w]+:\d+:in `[\w]+'\z}) }
 
       if n_plus_one_in_view?
+        # TODO: Check the action is in the base controller file
         @file_name = "#{Rails.root}/app/controllers/#{@controller}_controller.rb"
         view_file_index = @stacktraces.index do |stacktrace|
           stacktrace =~ %r{\A(#{Rails.root}/app/views/[./\w]+):\d+:in `[\w]+'\z} && !Pathname.new(Regexp.last_match(1)).basename.to_s.start_with?('_')
