@@ -74,22 +74,23 @@ module BulletmarkRepairer
         @index = view_yield_index.negative? ? ':' : "#{view_file}:#{view_yield_index}"
       else
         # TODO: Ignore controllers list
-        other_file_index = @stacktraces.index { |stacktrace| stacktrace.match?(%r{\A(#{Rails.root}[./\w]+):(\d+):in `[()\w\s]+'\z}) }
-        @file_name, other_yield_index = @stacktraces[other_file_index].scan(%r{\A(#{Rails.root}[./\w]+):(\d+):in `[()\w\s]+'\z}).flatten
-        other_yield_index = other_yield_index.to_i
+        # TODO: Allow directories list
+        controller_file_index = @stacktraces.index { |stacktrace| stacktrace.match?(%r{\A(#{Rails.root}/app/controllers[./\w]+):(\d+):in `[()\w\s]+'\z}) }
+        @file_name, controller_yield_index = @stacktraces[controller_file_index].scan(%r{\A(#{Rails.root}/app/controllers[./\w]+):(\d+):in `[()\w\s]+'\z}).flatten
+        controller_yield_index = controller_yield_index.to_i
         File.open(@file_name) do |f|
           lines = f.readlines
           loop do
-            break if @instance_variable_name || other_yield_index.zero?
+            break if @instance_variable_name || controller_yield_index.zero?
 
-            other_yield_index -= 1
-            line = lines[other_yield_index]
+            controller_yield_index -= 1
+            line = lines[controller_yield_index]
             # TODO: patch to local variables
             @instance_variable_name = line&.scan(/\b?(@[\w]+)\b?/)&.flatten&.last
             break if line.match?(/^\s+def [()\w\s=]+$/)
           end
         end
-        @index = @instance_variable_name ? "#{@file_name}:#{other_yield_index}" : ':'
+        @index = @instance_variable_name ? "#{@file_name}:#{controller_yield_index}" : ':'
       end
     end
   end
