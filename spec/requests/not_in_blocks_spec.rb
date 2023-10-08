@@ -3,20 +3,78 @@
 require 'rails_helper'
 
 RSpec.describe NotInBlocksController do
-  let(:src) do
-    <<-SRC
+  describe '#index' do
+    let(:src) do
+      <<-SRC
   def index
     Play.all_actors_name
   end
-    SRC
+      SRC
+    end
+
+    before do
+      create(:play, :blast)
+      create(:play, :crescent_wolf)
+    end
+
+    subject { get not_in_blocks_path }
+
+    it_behaves_like 'not patched'
   end
 
-  before do
-    create(:play, :blast)
-    create(:play, :crescent_wolf)
+  describe '#show' do
+    let(:original_src) do
+      <<-SRC
+  def show
+    @plays = Play.all.as_json
+  end
+      SRC
+    end
+
+    let(:patched_src) do
+      <<-SRC
+  def show
+    @plays = Play.all.as_json.includes([:actors])
+  end
+      SRC
+    end
+
+    before do
+      create(:play, :blast)
+      create(:play, :crescent_wolf)
+    end
+
+    subject { get not_in_block_path(Play.last) }
+
+    it_behaves_like 'correctly patched'
   end
 
-  subject { get not_in_blocks_path }
+  describe '#new' do
+    let(:original_src) do
+      <<-SRC
+  def new
+    plays = Play.all.as_json
+    @play = plays.last
+  end
+      SRC
+    end
 
-  it_behaves_like 'not patched'
+    let(:patched_src) do
+      <<-SRC
+  def new
+    plays = Play.all.as_json.includes([:actors])
+    @play = plays.last
+  end
+      SRC
+    end
+
+    before do
+      create(:play, :blast)
+      create(:play, :crescent_wolf)
+    end
+
+    subject { get new_not_in_block_path }
+
+    it_behaves_like 'correctly patched'
+  end
 end

@@ -5,6 +5,12 @@ class Corrector < Parser::TreeRewriter
     return if patched?
 
     node.children.each { |child_node| insert_includes(node: child_node) }
+    return if patched?
+
+    node.children.each { |child_node| insert_includes_for_vasgn(node: child_node, type: :ivasgn) }
+    return if patched?
+
+    node.children.each { |child_node| insert_includes_for_vasgn(node: child_node, type: :lvasgn) }
   end
 
   private
@@ -18,11 +24,25 @@ class Corrector < Parser::TreeRewriter
     return if !node.respond_to?(:children) || node.children.empty?
     return unless node.location.expression.line <= line_no && line_no <= node.location.expression.last_line
 
+    # TODO: Patch Enumerable methods other than each and map
     if node.children.last.in?(%i[each map])
       insert_after node.children[0].location.expression, ".includes(#{associations})"
       @patched = true
     else
       node.children.each { |child_node| insert_includes(node: child_node) }
+    end
+  end
+
+  def insert_includes_for_vasgn(node:, type:)
+    return if patched?
+    return if !node.respond_to?(:children) || node.children.empty?
+    return unless node.location.expression.line <= line_no && line_no <= node.location.expression.last_line
+
+    if node.type == type
+      insert_after node.children.last.location.expression, ".includes(#{associations})"
+      @patched = true
+    else
+      node.children.each { |child_node| insert_includes_for_vasgn(node: child_node, type:) }
     end
   end
 
