@@ -7,7 +7,7 @@ RSpec.describe AvoidIncludesController do
     <<-SRC
   def index
     @plays = Play.all.includes(:actors)
-    @plays.each { |play| play.name }
+    @plays.each(&:name)
   end
     SRC
   end

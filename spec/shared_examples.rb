@@ -28,16 +28,16 @@ RSpec.shared_examples 'not patched' do
 
   it do
     File.open(filename) do |f|
-      src = f.read
-      expect(src.include?(src)).to eq true
+      raw_src = f.read
+      expect(raw_src.include?(src)).to eq true
     end
 
     subject
     expect(response).to have_http_status 200
 
     File.open(filename) do |f|
-      src = f.read
-      expect(src.include?(src)).to eq true
+      raw_src = f.read
+      expect(raw_src.include?(src)).to eq true
     end
   end
 end
