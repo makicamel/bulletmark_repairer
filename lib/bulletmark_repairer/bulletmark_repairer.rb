@@ -55,7 +55,7 @@ module BulletmarkRepairer
             @associations[klass_name][:associations] |= [association_name]
             next unless association.options[:source]
 
-            alias_name = association.instance_of?(ActiveRecord::Reflection::HasManyReflection) ? association.options[:source].to_s.pluralize.to_sym : association.options[:source]
+            alias_name = association.instance_of?(::ActiveRecord::Reflection::HasManyReflection) ? association.options[:source].to_s.pluralize.to_sym : association.options[:source]
             @associations[klass_name][:aliases][association.name] |= [alias_name]
           end
         end
