@@ -79,18 +79,17 @@ module BulletmarkRepairer
         @line_no = nil
       else
         # TODO: Ignore controllers list
-        # TODO: Allow namespeces list
-        if @stacktraces.any? { |stacktrace| stacktrace =~ %r{\A(#{Rails.root}/app/controllers/[./\w]+):(\d+):in `[()\w\s]+'\z} } ||
-           @stacktraces.any? { |stacktrace| stacktrace =~ %r{\A([./\w]+):\d+:in `[\w\s]+'\z} }
-          @file_name = Regexp.last_match[1]
-          @line_no = Regexp.last_match[2]
+        # TODO: Allow directories list
+        if (stacktrace_index = @stacktraces.index { |stacktrace| stacktrace.in?(BulletmarkRepairer.callers[base_class]) })
+          @file_name, @line_no = @stacktraces[stacktrace_index].scan(%r{\A(/[./\w]+):(\d+):in `[()\s\w]+'\z}).flatten
+        elsif (line_no_index = @stacktraces.index { |stacktrace| stacktrace =~ %r{\A(#{Rails.root}/app/controllers/[./\w]+):(\d+):in `[()\w\s]+'\z} })
+          @file_name, @line_no = @stacktraces[line_no_index + 1].scan(%r{\A(/[./\w]+):(\d+):in `[()\s\w]+'\z}).flatten
+        else
+          @file_name = nil
+          @line_no = nil
         end
         @instance_variable_name_in_view = nil
         @instance_variable_finename_index_in_view = nil
-        line_no_index = @stacktraces.index { |stacktrace| stacktrace.match?(/\A#{@file_name}+:\d+:in `block [()\s\w]*in [\s\w]+'\z/) }
-        if line_no_index # rubocop:disable Style/IfUnlessModifier
-          @line_no = @stacktraces[line_no_index + 1].scan(%r{\A/[./\w]+:(\d+):in `[\s\w]+'\z}).flatten.first
-        end
       end
     end
   end
