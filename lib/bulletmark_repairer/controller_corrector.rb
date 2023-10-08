@@ -11,13 +11,20 @@ class ControllerCorrector < Parser::TreeRewriter
           target_nodes[identifier] = child_node
         when :begin
           child_node.children.each do |grand_child_node|
-            type, identifier = grand_child_node.to_sexp_array.take(2)
-            target_nodes[identifier] = grand_child_node if type == :def
+            type, identifier, callback_type, (_, callback_identifier) = grand_child_node.to_sexp_array
+            if type == :def
+              target_nodes[identifier] = grand_child_node
+            elsif callback_type.in? %i[before_action after_action around_action]
+              callbacks.append callback_identifier
+            end
           end
         end
       end
     action_node = target_nodes.delete(action)
     insert_includes(node: action_node)
+    return if patched?
+
+    callbacks.each { |callback_identifier| insert_includes(node: target_nodes[callback_identifier]) }
   end
 
   private
@@ -28,6 +35,10 @@ class ControllerCorrector < Parser::TreeRewriter
 
   def target_nodes
     @target_nodes ||= {}
+  end
+
+  def callbacks
+    @callbacks ||= []
   end
 
   def insert_includes(node:)
