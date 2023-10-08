@@ -71,7 +71,7 @@ module BulletmarkRepairer
             @instance_variable_name = line&.scan(/\b?(@[\w]+)\b?/)&.flatten&.last
           end
         end
-        @index = view_yield_index.negative? ? ':' : "#{view_file}:#{view_yield_index}"
+        @index = view_yield_index.negative? ? nil : "#{view_file}:#{view_yield_index}"
       else
         # TODO: Ignore controllers list
         # TODO: Allow directories list
@@ -90,7 +90,7 @@ module BulletmarkRepairer
             break if line.match?(/^\s+def [()\w\s=]+$/)
           end
         end
-        @index = @instance_variable_name ? "#{@file_name}:#{controller_yield_index}" : ':'
+        @index = @instance_variable_name ? "#{@file_name}:#{controller_yield_index}" : nil
       end
     end
   end
