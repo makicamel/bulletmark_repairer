@@ -19,8 +19,8 @@ RSpec.describe MultipleLinesController do
   let(:patched_src) do
     <<-SRC
   def index
-    @plays = Play.joins(:actors)
-    @plays.tap(&:size).includes([:actors])
+    @plays = Play.joins(:actors).includes([:actors])
+    @plays.tap(&:size)
           .each do |play|
       play
         .actors

@@ -16,8 +16,8 @@ RSpec.describe PreviousLinesController do
   let(:patched_src) do
     <<-SRC
   def index
-    @plays = Play.joins(:actors)
-    @plays.includes([:actors]).each do |play|
+    @plays = Play.joins(:actors).includes([:actors])
+    @plays.each do |play|
       play.actors.map(&:name)
     end
   end

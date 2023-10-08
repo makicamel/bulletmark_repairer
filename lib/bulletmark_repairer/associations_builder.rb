@@ -23,14 +23,10 @@ module BulletmarkRepairer
   class Associations
     extend Forwardable
 
-    def_delegators :@marker, :file_name
+    def_delegators :@marker, :file_name, :instance_variable_name
 
     def add(child_marker)
       build_associations!(marker: child_marker, associations: @marker.associations, parent_keys: [:base])
-    end
-
-    def instance_variable_name
-      @marker.instance_variable_name_in_view
     end
 
     def corrector(dir)

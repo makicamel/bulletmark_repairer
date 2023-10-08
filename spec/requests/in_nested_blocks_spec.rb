@@ -21,10 +21,10 @@ RSpec.describe InNestedBlocksController do
   let(:patched_src) do
     <<-SRC
   def index
-    @plays = Play.all
+    @plays = Play.all.includes([:actors])
     respond_to do |format|
       format.html do
-        @plays.includes([:actors]).each do |play|
+        @plays.each do |play|
           play.actors.map(&:name)
         end
       end

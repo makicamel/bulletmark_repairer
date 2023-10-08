@@ -28,7 +28,7 @@ module BulletmarkRepairer
   end
 
   class Marker
-    attr_reader :base_class, :associations, :action, :file_name, :line_no, :instance_variable_name_in_view
+    attr_reader :base_class, :associations, :action, :file_name, :instance_variable_name, :index
 
     def initialize(notification, controller:, action:)
       @base_class = notification.instance_variable_get(:@base_class)
@@ -45,10 +45,6 @@ module BulletmarkRepairer
 
     def n_plus_one_in_view?
       @n_plus_one_in_view
-    end
-
-    def index
-      @instance_variable_finename_index_in_view || "#{file_name}:#{line_no}"
     end
 
     private
@@ -68,28 +64,32 @@ module BulletmarkRepairer
         File.open(view_file) do |f|
           lines = f.readlines
           loop do
-            break if @instance_variable_name_in_view || view_yield_index.zero?
+            break if @instance_variable_name || view_yield_index.zero?
 
             view_yield_index -= 1
             line = lines[view_yield_index]
-            @instance_variable_name_in_view = line&.scan(/\b?(@[\w]+)\b?/)&.flatten&.last
+            @instance_variable_name = line&.scan(/\b?(@[\w]+)\b?/)&.flatten&.last
           end
         end
-        @instance_variable_finename_index_in_view = view_yield_index.negative? ? ':' : "#{view_file}:#{view_yield_index}"
-        @line_no = nil
+        @index = view_yield_index.negative? ? ':' : "#{view_file}:#{view_yield_index}"
       else
         # TODO: Ignore controllers list
-        # TODO: Allow directories list
-        if (stacktrace_index = @stacktraces.index { |stacktrace| stacktrace.in?(BulletmarkRepairer.callers[base_class]) })
-          @file_name, @line_no = @stacktraces[stacktrace_index].scan(%r{\A(/[./\w]+):(\d+):in `[()\s\w]+'\z}).flatten
-        elsif (line_no_index = @stacktraces.index { |stacktrace| stacktrace =~ %r{\A(#{Rails.root}/app/controllers/[./\w]+):(\d+):in `[()\w\s]+'\z} })
-          @file_name, @line_no = @stacktraces[line_no_index + 1].scan(%r{\A(/[./\w]+):(\d+):in `[()\s\w]+'\z}).flatten
-        else
-          @file_name = nil
-          @line_no = nil
+        other_file_index = @stacktraces.index { |stacktrace| stacktrace.match?(%r{\A(#{Rails.root}[./\w]+):(\d+):in `[()\w\s]+'\z}) }
+        @file_name, other_yield_index = @stacktraces[other_file_index].scan(%r{\A(#{Rails.root}[./\w]+):(\d+):in `[()\w\s]+'\z}).flatten
+        other_yield_index = other_yield_index.to_i
+        File.open(@file_name) do |f|
+          lines = f.readlines
+          loop do
+            break if @instance_variable_name || other_yield_index.zero?
+
+            other_yield_index -= 1
+            line = lines[other_yield_index]
+            # TODO: patch to local variables
+            @instance_variable_name = line&.scan(/\b?(@[\w]+)\b?/)&.flatten&.last
+            break if line.match?(/^\s+def [()\w\s=]+$/)
+          end
         end
-        @instance_variable_name_in_view = nil
-        @instance_variable_finename_index_in_view = nil
+        @index = @instance_variable_name ? "#{@file_name}:#{other_yield_index}" : ':'
       end
     end
   end

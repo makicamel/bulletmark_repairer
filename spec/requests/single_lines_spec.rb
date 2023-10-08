@@ -14,8 +14,8 @@ RSpec.describe SingleLinesController do
   let(:patched_src) do
     <<-SRC
   def show
-    @plays = Play.joins(:actors)
-    @plays.includes([:actors]).each { |play| play.actors.map { |actor| "name: \#{actor.name}" } }
+    @plays = Play.joins(:actors).includes([:actors])
+    @plays.each { |play| play.actors.map { |actor| "name: \#{actor.name}" } }
   end
     SRC
   end
