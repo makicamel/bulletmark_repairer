@@ -1,6 +1,15 @@
 # frozen_string_literal: true
 
 module BulletmarkRepairer
+  def self.callers
+    @callers ||= Hash.new { |hash, key| hash[key] = [] }
+  end
+
+  def self.add_caller(base_class:, callers:)
+    specified_caller = callers.first.match?(%r{\A([./\w]+)+:\d+:in `block [()\s\w]*in [\s\w]+'\z}) ? [callers.second] : [callers.first]
+    @callers[base_class] |= specified_caller
+  end
+
   def self.associations
     @associations ||= ApplicationAssociations.new
   end
