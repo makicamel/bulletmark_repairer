@@ -89,7 +89,7 @@ module BulletmarkRepairer
         @instance_variable_finename_index_in_view = nil
         line_no_index = @stacktraces.index { |stacktrace| stacktrace.match?(/\A#{@file_name}+:\d+:in `block [()\s\w]*in [\s\w]+'\z/) }
         if line_no_index # rubocop:disable Style/IfUnlessModifier
-          @line_no = @stacktraces[line_no_index + 1].scan(%r{\A/[./\w]+:(\d+):in `[\s\w]+'\z}).flatten.first.to_i
+          @line_no = @stacktraces[line_no_index + 1].scan(%r{\A/[./\w]+:(\d+):in `[\s\w]+'\z}).flatten.first
         end
       end
     end
