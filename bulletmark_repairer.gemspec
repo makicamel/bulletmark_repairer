@@ -29,5 +29,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'bullet'
+  spec.add_dependency 'parser'
   spec.add_dependency 'rails'
 end
