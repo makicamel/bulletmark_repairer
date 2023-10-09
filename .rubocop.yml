@@ -21,18 +21,10 @@ Metrics/AbcSize:
   Enabled: false
 
 Metrics/CyclomaticComplexity:
-  AllowedMethods:
-    - insert_includes
-    - insert_includes_for_vasgn
-    - formed_key
-    - set_up
+  Enabled: false
 
 Metrics/PerceivedComplexity:
-  AllowedMethods:
-    - insert_includes
-    - insert_includes_for_vasgn
-    - formed_key
-    - set_up
+  Enabled: false
 
 Metrics/BlockLength:
   Enabled: false
