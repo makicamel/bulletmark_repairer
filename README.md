@@ -1,34 +1,85 @@
 # BulletmarkRepairer
 
-TODO: Delete this and the text below, and describe your gem
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/bulletmark_repairer`. To experiment with that code, run `bin/console` for an interactive prompt.
+BulletmarkRepairer is an auto corrector for N+1 queries detected at runtime on Ruby on Rails application using [Bullet](https://github.com/flyerhzm/bullet) and [Parser](https://github.com/whitequark/parser).
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+Add this line to your application's Gemfile:
 
-Install the gem and add to the application's Gemfile by executing:
-
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
-
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+```ruby
+gem 'bulletmark_repairer', group :development, :test
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+Run rails server or rspec with REPAIR=1 to autocorrect when N+1 queries are caused.
 
-## Development
+```bash
+REPAIR=1 rails server
+REPAIR=1 rspec
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+### How BulletmarkRepairer auto corrects
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+After receiving Bullet's N+1 notification, find the code that the instance variable is assigned and add `includes` to it.  
+Currently, only the controller directory is a candidate for auto correct.  
+(We plan to implement allow list in the future)  
+Also when N+1 occurs in the views, correct the controller.
+
+### Disclaimer
+
+#### BulletmarkRepairer is *NOT* safe
+
+You must check that auto corrects are correct before you commit.  
+For example, when the associations to include depends on the request parameters, human intervention is required.
+
+```ruby
+def index
+  # Required associations depend on the parameters
+  @plays = Play.ransack(params[:q])
+end
+```
+
+#### BulletmarkRepairer is *NOT* complete
+
+You can check `log/bulletmark_repairer.log` for files where N+1 is detected but not auto corrected.  
+For example, the following cases are not supported as known cases currently:
+
+```ruby
+def index
+  # N+1 is caused but not assigned
+  Play.all_actors_name
+end
+
+def index
+  # N+1 occurs when assigning a local variable
+  plays = Play.all.as_json
+  @play = plays.last
+end
+```
+
+### Configuration
+
+To customize, add `config/initializers/bulletmark_repairer.rb`:
+
+```ruby
+BulletmarkRepairer.configure do |config|
+  # when you want to output log to Rails.logger
+  config.logger = Rails.logger
+  # when BulletmarkRepairer malfunctions, skip the file
+  config.skip_file_list = %w[app/controllers/plays_controller.rb]
+  # when you want to debug bulletmark_repairer's errors
+  config.debug = true
+end
+```
+
+- `logger`: Injectable logger. In default `Logger.new("#{Rails.root}/log/bulletmark_repairer.log")`
+- `skip_file_list`: File list to skip to auto correct. In default `[]`
+- `debug`: To raise BulletmarkRepairer's error or not. In default `false`
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/makicamel/bulletmark_repairer. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/makicamel/bulletmark_repairer/blob/main/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at <https://github.com/makicamel/bulletmark_repairer>. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/makicamel/bulletmark_repairer/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
