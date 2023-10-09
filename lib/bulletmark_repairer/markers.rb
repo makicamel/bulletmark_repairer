@@ -43,6 +43,10 @@ module BulletmarkRepairer
       @associations += notification.instance_variable_get(:@associations)
     end
 
+    def skip?
+      index.nil?
+    end
+
     def n_plus_one_in_view?
       @n_plus_one_in_view
     end

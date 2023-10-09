@@ -6,7 +6,7 @@ module BulletmarkRepairer
   class AssociationsBuilder
     def build(marker)
       # TODO: Notify if fail to find suitable file to be patched
-      return unless marker.index
+      return if marker.skip?
 
       if associations[marker.index]
         associations[marker.index].add(marker)
