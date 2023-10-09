@@ -6,6 +6,7 @@ require 'action_controller/railtie'
 require 'active_record/railtie'
 require 'bullet'
 
+ENV['REPAIR'] ||= '1'
 require 'bulletmark_repairer'
 
 module BulletmarkRepairerTestApp
