@@ -44,6 +44,7 @@ module BulletmarkRepairer
     end
 
     def skip?
+      log_patchable_files_not_be_found
       index.nil? || file_name.remove("#{Rails.root}/").in?(BulletmarkRepairer.config.skip_file_list)
     end
 
@@ -52,6 +53,20 @@ module BulletmarkRepairer
     end
 
     private
+
+    def log_patchable_files_not_be_found
+      return if index
+
+      BulletmarkRepairer.config.logger.info <<~LOG
+        Repairer couldn't patch
+        #{"#{@controller}_controller".camelize.constantize}##{@action}
+        #{base_class} => #{associations}
+        Might be able to add one of the following
+          includes(#{associations}) / includes(#{base_class.underscore}: #{associations}) / includes(#{base_class.underscore.pluralize}: #{associations})
+        Stacktraces
+          #{@stacktraces.join("\n  ")}
+      LOG
+    end
 
     def set_up
       @n_plus_one_in_view = @stacktraces.any? { |stacktrace| stacktrace.match?(%r{\A#{Rails.root}/app/views/[./\w]+:\d+:in `[\w]+'\z}) }

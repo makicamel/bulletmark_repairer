@@ -5,7 +5,6 @@ require 'forwardable'
 module BulletmarkRepairer
   class AssociationsBuilder
     def build(marker)
-      # TODO: Notify if fail to find suitable file to be patched
       return if marker.skip?
 
       if associations[marker.index]
