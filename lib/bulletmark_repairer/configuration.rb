@@ -3,16 +3,16 @@
 module BulletmarkRepairer
   class Configration
     attr_accessor :skip_file_list, :logger
-    attr_writer :development
+    attr_writer :debug
 
     def initialize
-      @development = false
+      @debug = false
       @skip_file_list = []
       @logger = Logger.new("#{Rails.root}/log/bulletmark_repairer.log")
     end
 
-    def development?
-      @development
+    def debug?
+      @debug
     end
   end
 

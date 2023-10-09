@@ -19,7 +19,7 @@ module BulletmarkRepairer
           )
         end
       rescue StandardError => e
-        raise e if BulletmarkRepairer.config.development?
+        raise e if BulletmarkRepairer.config.debug?
       end
     end
   end
