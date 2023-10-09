@@ -2,10 +2,12 @@
 
 module BulletmarkRepairer
   class Configration
+    attr_accessor :skip_file_list
     attr_writer :development
 
     def initialize
       @development = false
+      @skip_file_list = []
     end
 
     def development?

@@ -44,7 +44,7 @@ module BulletmarkRepairer
     end
 
     def skip?
-      index.nil?
+      index.nil? || file_name.remove("#{Rails.root}/").in?(BulletmarkRepairer.config.skip_file_list)
     end
 
     def n_plus_one_in_view?
