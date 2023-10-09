@@ -19,8 +19,7 @@ module BulletmarkRepairer
           )
         end
       rescue StandardError => e
-        # TODO: handle error
-        raise e
+        raise e if BulletmarkRepairer.config.development?
       end
     end
   end
