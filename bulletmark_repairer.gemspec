@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = 'Auto corrector for N+1 queries detected at runtime with Bullet.'
   spec.homepage = 'https://github.com/makicamel/bulletmark_repairer'
   spec.license = 'MIT'
-  spec.required_ruby_version = '>= 2.6.0' # rubocop:disable Gemspec/RequiredRubyVersion
+  spec.required_ruby_version = '>= 2.7.0'
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/makicamel/bulletmark_repairer'
