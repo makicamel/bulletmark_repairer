@@ -7,7 +7,7 @@ require 'parser/runner/ruby_rewrite'
 module BulletmarkRepairer
   class Pathcer
     def self.execute(notifications:, controller:, action:)
-      new(notifications:, controller:, action:).execute
+      new(notifications: notifications, controller: controller, action: action).execute
     end
 
     def execute
@@ -25,7 +25,7 @@ module BulletmarkRepairer
     private
 
     def initialize(notifications:, controller:, action:)
-      @markers = Markers.new(notifications, controller:, action:)
+      @markers = Markers.new(notifications, controller: controller, action: action)
       @associations_builder = BulletmarkRepairer::AssociationsBuilder.new
     end
   end

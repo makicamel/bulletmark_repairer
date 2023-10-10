@@ -19,8 +19,8 @@ module BulletmarkRepairer
         else
           @markers[base_class] = Marker.new(
             notification,
-            controller:,
-            action:
+            controller: controller,
+            action: action
           )
         end
       end

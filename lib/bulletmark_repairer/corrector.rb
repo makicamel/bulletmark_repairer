@@ -42,7 +42,7 @@ class Corrector < Parser::TreeRewriter
       insert_after node.children.last.location.expression, ".includes(#{associations})"
       @patched = true
     else
-      node.children.each { |child_node| insert_includes_for_vasgn(node: child_node, type:) }
+      node.children.each { |child_node| insert_includes_for_vasgn(node: child_node, type: type) }
     end
   end
 

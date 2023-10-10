@@ -8,7 +8,7 @@ RSpec.describe BulletmarkRepairer::Associations do
     let(:parent_marker) { double(:marker, base_class: parent_attributes.keys.first, associations: parent_attributes.values.first) }
     let(:child_marker) { double(:marker, base_class: child_attributes.keys.first, associations: child_attributes.values.first) }
 
-    subject { associations.__send__(:build_associations!, marker: child_marker, associations: parent_marker.associations, parent_keys:) }
+    subject { associations.__send__(:build_associations!, marker: child_marker, associations: parent_marker.associations, parent_keys: parent_keys) }
 
     context 'simple pattern' do
       let(:parent_keys) { [:base] }

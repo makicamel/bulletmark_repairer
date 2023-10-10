@@ -30,7 +30,7 @@ module BulletmarkRepairer
 
     def corrector(dir)
       BulletmarkRepairer::CorrectorBuilder.new(
-        dir:,
+        dir: dir,
         marker: @marker,
         associations: @associations
       ).execute
@@ -45,9 +45,9 @@ module BulletmarkRepairer
 
     # @return [Hash, nil]
     def build_associations!(marker:, associations:, parent_keys:)
-      key = formed_key(marker:, associations:)
+      key = formed_key(marker: marker, associations: associations)
       if key
-        modify_value(key:, marker:, parent_keys:)
+        modify_value(key: key, marker: marker, parent_keys: parent_keys)
       else
         new_parent_keys = parent_keys
         new_parent_keys.append(0) if associations.is_a?(Array)
@@ -56,7 +56,7 @@ module BulletmarkRepairer
 
           association_values.each do |key, value|
             values = value.is_a?(Array) ? value : [value]
-            build_associations!(marker:, associations: { key => values }, parent_keys: new_parent_keys)
+            build_associations!(marker: marker, associations: { key => values }, parent_keys: new_parent_keys)
           end
         end
       end
