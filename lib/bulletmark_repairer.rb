@@ -11,5 +11,4 @@ require 'bulletmark_repairer/patcher'
 
 module BulletmarkRepairer
   class Error < StandardError; end
-  # Your code goes here...
 end
