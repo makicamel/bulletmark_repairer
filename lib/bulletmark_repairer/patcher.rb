@@ -5,7 +5,7 @@ require 'securerandom'
 require 'parser/runner/ruby_rewrite'
 
 module BulletmarkRepairer
-  class Pathcer
+  class Patcher
     def self.execute(notifications:, controller:, action:)
       new(notifications: notifications, controller: controller, action: action).execute
     end
