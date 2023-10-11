@@ -7,7 +7,7 @@ BulletmarkRepairer is an auto corrector for N+1 queries detected at runtime on R
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'bulletmark_repairer', group :development, :test
+gem 'bulletmark_repairer', group: %w(development test)
 ```
 
 ## Usage
