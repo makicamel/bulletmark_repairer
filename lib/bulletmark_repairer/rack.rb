@@ -12,7 +12,7 @@ module BulletmarkRepairer
     ensure
       begin
         if Thread.current[:bullet_notification_collector].notifications_present?
-          BulletmarkRepairer::Pathcer.execute(
+          BulletmarkRepairer::Patcher.execute(
             notifications: Thread.current[:bullet_notification_collector],
             controller: env['action_dispatch.request.parameters']['controller'],
             action: env['action_dispatch.request.parameters']['action']
