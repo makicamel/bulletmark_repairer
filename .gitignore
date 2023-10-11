@@ -13,4 +13,5 @@
 Gemfile.lock
 .byebug_history
 spec/log
+spec/fake_app/db/
 spec/fake_app/tmp
