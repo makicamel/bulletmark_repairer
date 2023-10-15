@@ -7,10 +7,6 @@ module BulletmarkRepairer
     end
 
     def call(env)
-      dup._call(env)
-    end
-
-    def _call(env)
       @app.call(env)
     ensure
       begin
