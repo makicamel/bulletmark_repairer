@@ -1,18 +1,6 @@
 # frozen_string_literal: true
 
 module BulletmarkRepairer
-  def self.associations
-    @associations ||= ApplicationAssociations.new
-  end
-
-  def self.key(target_klass_name, base_klass_name, candidates)
-    associations.key(target_klass_name, base_klass_name, candidates)
-  end
-
-  def self.reset_associations
-    @associations = nil
-  end
-
   class ApplicationAssociations
     def key(target_klass_name, base_klass_name, candidates)
       key = target_klass_name.underscore
