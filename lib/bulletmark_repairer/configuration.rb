@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module BulletmarkRepairer
-  class Configration
+  class Configuration
     attr_accessor :skip_file_list, :logger
     attr_writer :debug
 
@@ -22,7 +22,7 @@ module BulletmarkRepairer
     end
 
     def config
-      @config ||= Configration.new
+      @config ||= Configuration.new
     end
   end
 end
