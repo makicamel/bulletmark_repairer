@@ -46,10 +46,12 @@ class ControllerCorrector < Parser::TreeRewriter
     return unless node.respond_to?(:to_sexp_array)
 
     type, identifier = node.to_sexp_array.take(2)
-
     if type == :ivasgn && identifier == instance_variable_name
-      insert_after node.children.last.location.expression, ".includes(#{associations})"
-      @patched = true
+      inserted = ".includes(#{associations})"
+      unless node.location.expression.source.include?(inserted)
+        insert_after node.children.last.location.expression, inserted
+        @patched = true
+      end
     else
       node
         .children
