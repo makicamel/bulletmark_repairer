@@ -58,6 +58,7 @@ module BulletmarkRepairer
 
     def log_patchable_files_not_be_found
       return if index
+      return if BulletmarkRepairer.config.skip_file_list.exclude?(file_name.remove("#{Rails.root}/"))
 
       BulletmarkRepairer.config.logger.info <<~LOG
         Repairer couldn't patch
