@@ -55,7 +55,6 @@ class ControllerCorrector < Parser::TreeRewriter
     else
       node
         .children
-        .reverse
         .each do |child_node|
           child_type, _, child_identifier = child_node.try(:to_sexp_array)
           if child_type == :send && target_nodes.key?(child_identifier)

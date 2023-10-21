@@ -14,8 +14,8 @@ RSpec.describe NPlusOneInViewsController do
   let(:patched_src) do
     <<-SRC
   def index
-    @plays = Play.all
-    @plays = @plays.joins(:actors).includes([:actors])
+    @plays = Play.all.includes([:actors])
+    @plays = @plays.joins(:actors)
   end
     SRC
   end
