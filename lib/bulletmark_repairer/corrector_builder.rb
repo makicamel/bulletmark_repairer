@@ -16,17 +16,30 @@ module BulletmarkRepairer
     end
 
     def execute
-      corrector_name = '/controller_corrector.rb'
-      File.open("#{@dir}#{corrector_name}", 'w') do |f|
-        corrector = Pathname.new(__FILE__).sub('/corrector_builder.rb', corrector_name)
-        src = File.read(corrector)
-        src
-          .sub!(ASSOCIATIONS, @associations[:base].to_s)
-          .sub!(ACTION, @action)
-          .sub!(INSTANCE_VARIABLE_NAME, @instance_variable_name)
-        f.puts src
-        f
-      end.path
+      if @marker.retry
+        corrector_name = '/retry_corrector.rb'
+        File.open("#{@dir}#{corrector_name}", 'w') do |f|
+          corrector = Pathname.new(__FILE__).sub('/corrector_builder.rb', corrector_name)
+          src = File.read(corrector)
+          src
+            .sub!(ASSOCIATIONS, @associations[:base].to_s)
+            .sub!(LINE_NO, @marker.line_no)
+          f.puts src
+          f
+        end.path
+      else
+        corrector_name = '/controller_corrector.rb'
+        File.open("#{@dir}#{corrector_name}", 'w') do |f|
+          corrector = Pathname.new(__FILE__).sub('/corrector_builder.rb', corrector_name)
+          src = File.read(corrector)
+          src
+            .sub!(ASSOCIATIONS, @associations[:base].to_s)
+            .sub!(ACTION, @action)
+            .sub!(INSTANCE_VARIABLE_NAME, @instance_variable_name)
+          f.puts src
+          f
+        end.path
+      end
     end
   end
 end

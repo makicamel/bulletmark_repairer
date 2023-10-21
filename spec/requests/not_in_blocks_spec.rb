@@ -75,7 +75,6 @@ RSpec.describe NotInBlocksController do
 
     subject { get new_not_in_block_path }
 
-    # TODO: patch to local variables
-    # it_behaves_like 'correctly patched'
+    it_behaves_like 'correctly patched'
   end
 end

@@ -50,12 +50,6 @@ def index
   # N+1 is caused but not assigned
   Play.all_actors_name
 end
-
-def index
-  # N+1 occurs when assigning a local variable
-  plays = Play.all.as_json
-  @play = plays.last
-end
 ```
 
 ### Configuration
