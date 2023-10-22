@@ -1,3 +1,10 @@
+## [0.1.4] - 2023-10-22
+
+- Patch files other than controllers [218566d](https://github.com/makicamel/bulletmark_repairer/commit/218566d1531751f204941c3dcff7f095a056d39f)
+- Patch unassigned queries [159573a](https://github.com/makicamel/bulletmark_repairer/commit/159573ada036ee3ee39428b1e59066934b676c02)
+- Apply patches starting from the top of the method [f8d0058](https://github.com/makicamel/bulletmark_repairer/commit/f8d00582a5b3b084c0a35a54726396a2a063f8dd)
+- Log also when the target file is in the skip list [a23a3bc](https://github.com/makicamel/bulletmark_repairer/commit/a23a3bc0edf1e94d3aa6ea95449c9570b9322d65)
+
 ## [0.1.3] - 2023-10-18
 
 - Fix a redundant auto-correct for multiple tests with n+1 queries when running RSpec [#6](https://github.com/makicamel/bulletmark_repairer/pull/6) ([@ydah])
