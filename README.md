@@ -45,6 +45,17 @@ end
 You can check `log/bulletmark_repairer.log` for files where N+1 is detected but not auto corrected.  
 For example, the following cases are not supported as known cases currently:
 
+```ruby
+def index
+  # Nested associations require `includes` though child associations are already included
+  @plays = Play.includes(:actors)
+  # expected correct
+  @plays = Play.includes(actors: [:company])
+  # actual correct
+  @plays = Play.includes(:actors).includes([:company])
+end
+```
+
 ### Configuration
 
 To customize, add `config/initializers/bulletmark_repairer.rb`:
