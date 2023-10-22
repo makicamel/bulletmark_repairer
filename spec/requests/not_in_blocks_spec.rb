@@ -4,10 +4,18 @@ require 'rails_helper'
 
 RSpec.describe NotInBlocksController do
   describe '#index' do
-    let(:src) do
+    let(:original_src) do
       <<-SRC
   def index
     Play.all_actors_name
+  end
+      SRC
+    end
+
+    let(:patched_src) do
+      <<-SRC
+  def index
+    Play.all_actors_name.includes([:actors])
   end
       SRC
     end
@@ -19,7 +27,7 @@ RSpec.describe NotInBlocksController do
 
     subject { get not_in_blocks_path }
 
-    it_behaves_like 'not patched'
+    it_behaves_like 'correctly patched'
   end
 
   describe '#show' do

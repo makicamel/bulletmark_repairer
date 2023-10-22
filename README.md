@@ -45,13 +45,6 @@ end
 You can check `log/bulletmark_repairer.log` for files where N+1 is detected but not auto corrected.  
 For example, the following cases are not supported as known cases currently:
 
-```ruby
-def index
-  # N+1 is caused but not assigned
-  Play.all_actors_name
-end
-```
-
 ### Configuration
 
 To customize, add `config/initializers/bulletmark_repairer.rb`:
