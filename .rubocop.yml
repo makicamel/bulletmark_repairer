@@ -31,3 +31,6 @@ Metrics/BlockLength:
 
 Style/Documentation:
   Enabled: false
+
+Style/MultilineBlockChain:
+  Enabled: false
