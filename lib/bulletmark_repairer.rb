@@ -6,6 +6,7 @@ require 'bulletmark_repairer/application_associations'
 require 'bulletmark_repairer/associations_builder'
 require 'bulletmark_repairer/configuration'
 require 'bulletmark_repairer/corrector_builder'
+require 'bulletmark_repairer/loaded_associations'
 require 'bulletmark_repairer/markers'
 require 'bulletmark_repairer/patcher'
 

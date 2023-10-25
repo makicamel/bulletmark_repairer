@@ -13,7 +13,7 @@ RSpec.describe NestedThoughOnlyGrandChildIsRequiredIncludesController do
   let(:patched_src) do
     <<-SRC
   def index
-    @plays = Play.includes([{:actors=>[:company]}])
+    @plays = Play.includes(:actors).includes({:actors=>[:company]})
   end
     SRC
   end
@@ -25,5 +25,5 @@ RSpec.describe NestedThoughOnlyGrandChildIsRequiredIncludesController do
 
   subject { get nested_though_only_grand_child_is_required_includes_path }
 
-  # it_behaves_like 'correctly patched'
+  it_behaves_like 'correctly patched'
 end

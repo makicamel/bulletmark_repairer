@@ -6,8 +6,8 @@ require 'parser/runner/ruby_rewrite'
 
 module BulletmarkRepairer
   class Patcher
-    def self.execute(notifications:, controller:, action:)
-      new(notifications: notifications, controller: controller, action: action).execute
+    def self.execute(notifications:, controller:, action:, loaded_associations:)
+      new(notifications: notifications, controller: controller, action: action, loaded_associations: loaded_associations).execute
     end
 
     def execute
@@ -24,9 +24,9 @@ module BulletmarkRepairer
 
     private
 
-    def initialize(notifications:, controller:, action:)
+    def initialize(notifications:, controller:, action:, loaded_associations:)
       @markers = Markers.new(notifications, controller: controller, action: action)
-      @associations_builder = BulletmarkRepairer::AssociationsBuilder.new
+      @associations_builder = BulletmarkRepairer::AssociationsBuilder.new(loaded_associations)
     end
   end
 end

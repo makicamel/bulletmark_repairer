@@ -10,7 +10,11 @@ module BulletmarkRepairer
       if associations[marker.index]
         associations[marker.index].add(marker)
       else
-        associations[marker.index] = Associations.new(marker, @application_associations)
+        associations[marker.index] = Associations.new(
+          marker,
+          @application_associations,
+          @loaded_associations
+        )
       end
     end
 
@@ -20,8 +24,9 @@ module BulletmarkRepairer
 
     private
 
-    def initialize
+    def initialize(loaded_associations)
       @application_associations = BulletmarkRepairer::ApplicationAssociations.new
+      @loaded_associations = BulletmarkRepairer::LoadedAssociations.new(loaded_associations)
     end
   end
 
@@ -44,10 +49,12 @@ module BulletmarkRepairer
 
     private
 
-    def initialize(marker, application_associations)
+    def initialize(marker, application_associations, loaded_associations)
       @marker = marker
-      @associations = { base: marker.associations }
       @application_associations = application_associations
+      @loaded_associations = loaded_associations
+      key = @loaded_associations.key(marker.base_class)
+      @associations = { base: key ? { key => marker.associations } : marker.associations }
     end
 
     # @return [Hash, nil]
