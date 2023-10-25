@@ -19,6 +19,12 @@ class CreateAllTables < ActiveRecord::Migration[7.0]
       t.references :play
       t.references :actor
     end
+
+    create_table 'offices' do |t|
+      t.references :company
+      t.string :name
+      t.string :address
+    end
   end
 end
 

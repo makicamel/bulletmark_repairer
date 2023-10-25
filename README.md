@@ -47,12 +47,12 @@ For example, the following cases are not supported as known cases currently:
 
 ```ruby
 def index
-  # Nested associations require `includes` though child associations are already included
+  # Multiple nested associations require `includes` though child associations are already included
   @plays = Play.includes(:actors)
   # expected correct
-  @plays = Play.includes(actors: [:company])
+  @plays = Play.includes(:actors).includes({:actors=>{:company=>[:offices]}})
   # actual correct
-  @plays = Play.includes(:actors).includes([:company])
+  @plays = Play.includes(:actors).includes({:actors=>[:company]})
 end
 ```
 

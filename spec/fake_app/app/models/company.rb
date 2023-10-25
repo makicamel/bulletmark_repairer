@@ -2,4 +2,5 @@
 
 class Company < ActiveRecord::Base
   has_many :actors
+  has_many :offices
 end

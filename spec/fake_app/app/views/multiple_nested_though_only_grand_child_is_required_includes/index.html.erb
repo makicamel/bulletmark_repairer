@@ -1,0 +1,7 @@
+<% @plays.each do |play| %>
+  <% play.actors.each do |actor| %>
+    <% actor.company.offices.each do |office| %>
+      <%= office.name %>
+    <% end %>
+  <% end %>
+<% end %>
