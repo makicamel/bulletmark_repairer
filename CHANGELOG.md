@@ -1,3 +1,7 @@
+## [0.1.5] - 2023-10-27
+
+Be able to patch for nested associations require `includes` though child associations are already included [d1b7445](https://github.com/makicamel/bulletmark_repairer/commit/d1b7445556c20bc037beb6a013ac70531426a7ea)
+
 ## [0.1.4] - 2023-10-22
 
 - Patch files other than controllers [218566d](https://github.com/makicamel/bulletmark_repairer/commit/218566d1531751f204941c3dcff7f095a056d39f)
