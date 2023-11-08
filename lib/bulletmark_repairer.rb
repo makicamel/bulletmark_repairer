@@ -9,6 +9,7 @@ require 'bulletmark_repairer/corrector_builder'
 require 'bulletmark_repairer/loaded_associations'
 require 'bulletmark_repairer/markers'
 require 'bulletmark_repairer/patcher'
+require 'bulletmark_repairer/thread'
 
 module BulletmarkRepairer
   class Error < StandardError; end

@@ -4,17 +4,17 @@ module BulletmarkRepairer
   module ActiveRecord
     module QueryMethod
       def includes(*args)
-        Thread.current[:bulletmark_repaier_loaded_associations][model.name][:includes].add(args)
+        BulletmarkRepairer::Thread.add(name: model.name, method_type: :includes, args: args)
         super(args)
       end
 
       def eager_load(*args)
-        Thread.current[:bulletmark_repaier_loaded_associations][model.name][:eager_load].add(args)
+        BulletmarkRepairer::Thread.add(name: model.name, method_type: :eager_load, args: args)
         super(args)
       end
 
       def preload(*args)
-        Thread.current[:bulletmark_repaier_loaded_associations][model.name][:preload].add(args)
+        BulletmarkRepairer::Thread.add(name: model.name, method_type: :preload, args: args)
         super(args)
       end
     end
