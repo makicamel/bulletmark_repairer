@@ -1,3 +1,7 @@
+## [0.1.6] - 2023-11-09
+
+Fix a bug when N+1 is caused not in the request (e.g. Sidekiq) [51f051e](https://github.com/makicamel/bulletmark_repairer/commit/51f051e608b84b7da96ac879a324ed438c14eeeb)
+
 ## [0.1.5] - 2023-10-27
 
 Be able to patch for nested associations require `includes` though child associations are already included [d1b7445](https://github.com/makicamel/bulletmark_repairer/commit/d1b7445556c20bc037beb6a013ac70531426a7ea)
