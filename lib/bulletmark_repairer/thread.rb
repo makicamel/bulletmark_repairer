@@ -5,24 +5,29 @@ require 'rails'
 module BulletmarkRepairer
   class Thread
     class << self
-      def current
-        touch
+      def current(key)
+        touch(key)
       end
 
       def add(name:, method_type:, args:)
-        touch
-        ::Thread.current[:bulletmark_repaier_loaded_associations][name][method_type].add(args)
+        current(:loaded_associations)[name][method_type].add(args)
       end
 
       def clear
-        ::Thread.current[:bulletmark_repaier_loaded_associations] = nil
+        ::Thread.current[:bulletmark_repairer] = nil
       end
 
       private
 
-      def touch
-        ::Thread.current[:bulletmark_repaier_loaded_associations] ||= Hash.new do |hash, key|
-          hash[key] = { includes: Set.new, eager_load: Set.new, preload: Set.new }
+      # @param key [Symbol] :loaded_associations or :loaded_instance_variables
+      def touch(key)
+        ::Thread.current[:bulletmark_repairer] ||= {}
+        if key == :loaded_associations
+          ::Thread.current[:bulletmark_repairer][:loaded_associations] ||= Hash.new do |hash, key|
+            hash[key] = { includes: Set.new, eager_load: Set.new, preload: Set.new }
+          end
+        else
+          ::Thread.current[:bulletmark_repairer][:loaded_instance_variables] ||= Set.new
         end
       end
     end

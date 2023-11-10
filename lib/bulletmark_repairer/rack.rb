@@ -15,7 +15,7 @@ module BulletmarkRepairer
             notifications: ::Thread.current[:bullet_notification_collector],
             controller: env['action_dispatch.request.parameters']['controller'],
             action: env['action_dispatch.request.parameters']['action'],
-            loaded_associations: BulletmarkRepairer::Thread.current
+            loaded_associations: BulletmarkRepairer::Thread.current(:loaded_associations)
           )
         end
       rescue StandardError => e
