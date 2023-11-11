@@ -9,7 +9,7 @@ module BulletmarkRepairer
         touch(key)
       end
 
-      def add(name:, method_type:, args:)
+      def memorize_associations(name:, method_type:, args:)
         current(:loaded_associations)[name][method_type].add(args)
       end
 
