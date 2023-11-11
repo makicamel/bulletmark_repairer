@@ -1,0 +1,8 @@
+<% plays = @plays %>
+<% if @favorite %>
+  <% plays.each do |play| %>
+    <% play.actors.each do |actor| %>
+      <%= actor.name %>
+    <% end %>
+  <% end %>
+<% end %>

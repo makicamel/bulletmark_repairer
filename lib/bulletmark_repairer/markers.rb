@@ -82,7 +82,6 @@ module BulletmarkRepairer
         end
         view_file, view_yield_index = @stacktraces[view_file_index].scan(%r{\A(/[./\w]+):(\d+):in `[\w]+'\z}).flatten
         view_yield_index = view_yield_index.to_i
-        # TODO: Compile views
         File.open(view_file) do |f|
           lines = f.readlines
           loop do
@@ -90,7 +89,8 @@ module BulletmarkRepairer
 
             view_yield_index -= 1
             line = lines[view_yield_index]
-            @instance_variable_name = line&.scan(/\b?(@[\w]+)\b?/)&.flatten&.last
+            token = line&.scan(/\b?(@[\w]+)\b?/)&.flatten&.last
+            @instance_variable_name = token if BulletmarkRepairer::Thread.instance_variable_name?(token)
           end
         end
         @index = @instance_variable_name ? "#{view_file}:#{view_yield_index}" : nil

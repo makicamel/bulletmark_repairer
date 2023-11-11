@@ -14,5 +14,9 @@ module BulletmarkRepairer
       require 'bulletmark_repairer/monkey_patches/active_record/query_method'
       ::ActiveRecord::Relation.prepend(BulletmarkRepairer::ActiveRecord::QueryMethod)
     end
+    ActiveSupport.on_load(:action_view) do
+      require 'bulletmark_repairer/monkey_patches/action_view/base'
+      ::ActionView::Base.prepend(BulletmarkRepairer::ActionView::Base)
+    end
   end
 end

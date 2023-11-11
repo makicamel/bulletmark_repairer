@@ -18,5 +18,6 @@ BulletmarkRepairerTestApp::Application.routes.draw do
   resources :multiple_nested_though_only_grand_child_is_required_includes, only: [:index]
   resources :another_name_associations, only: [:index]
   resources :nested_and_another_name_includes, only: [:index]
+  resources :instance_variables, only: [:index]
   resources :avoid_includes, only: [:index]
 end

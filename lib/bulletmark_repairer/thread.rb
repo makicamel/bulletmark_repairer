@@ -13,6 +13,16 @@ module BulletmarkRepairer
         current(:loaded_associations)[name][method_type].add(args)
       end
 
+      def memorize_instance_variable_name(name:, value:)
+        return unless value.is_a?(::ActiveRecord::Relation)
+
+        current(:loaded_instance_variables).add("@#{name}")
+      end
+
+      def instance_variable_name?(name)
+        current(:loaded_instance_variables).include?(name)
+      end
+
       def clear
         ::Thread.current[:bulletmark_repairer] = nil
       end
