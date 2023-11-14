@@ -33,6 +33,14 @@ class ControllerCorrector < Parser::TreeRewriter
     @patched ||= false
   end
 
+  def includes_token
+    @includes_token ||= ".includes(#{associations})"
+  end
+
+  def inserted?(parent_node)
+    parent_node.location.expression.source.include?(includes_token)
+  end
+
   def target_nodes
     @target_nodes ||= {}
   end
@@ -47,10 +55,8 @@ class ControllerCorrector < Parser::TreeRewriter
 
     type, identifier = node.to_sexp_array.take(2)
     if type == :ivasgn && identifier == instance_variable_name
-      inserted = ".includes(#{associations})"
-      unless node.location.expression.source.include?(inserted)
-        insert_after node.children.last.location.expression, inserted
-        @patched = true
+      node.children.each do |child_node|
+        execute_insert_includes(node: child_node, parent_node: node)
       end
     else
       node
@@ -64,6 +70,22 @@ class ControllerCorrector < Parser::TreeRewriter
             insert_includes(node: child_node)
           end
         end
+    end
+  end
+
+  def execute_insert_includes(node:, parent_node:)
+    return unless node.respond_to?(:children)
+    return if patched?
+
+    node.children.each do |child_node|
+      if child_node.is_a?(Symbol)
+        if BulletmarkRepairer::Thread.correctable_method?(child_node) && !inserted?(parent_node)
+          insert_after node.location.expression, includes_token
+          @patched = true
+        end
+      else
+        execute_insert_includes(node: child_node, parent_node: node)
+      end
     end
   end
 

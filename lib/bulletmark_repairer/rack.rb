@@ -7,8 +7,15 @@ module BulletmarkRepairer
     end
 
     def call(env)
+      trace_point = TracePoint.trace(:return) do |tp|
+        BulletmarkRepairer::Thread.memorize_methods(
+          method_name: tp.method_id,
+          value: tp.return_value
+        )
+      end
       @app.call(env)
     ensure
+      trace_point.disable
       begin
         if ::Thread.current[:bullet_notification_collector].notifications_present?
           BulletmarkRepairer::Patcher.execute(
