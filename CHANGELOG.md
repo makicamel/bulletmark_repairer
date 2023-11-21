@@ -1,3 +1,8 @@
+## [0.1.7] - 2023-11-21
+
+- Validate detected instance_variable is an ActiveRecord::Relation [ed650ae](https://github.com/makicamel/bulletmark_repairer/commit/ed650ae41b4389774cb1135031f077e953d2c5db) [86497bd](https://github.com/makicamel/bulletmark_repairer/commit/86497bd3cbb6daf1672cd18210e5842d0ecc084f)
+- Add includes after methods returning AR on autocorrect [767e5e1](https://github.com/makicamel/bulletmark_repairer/commit/767e5e1389f84daa6efce4463a4979a100c16640)
+
 ## [0.1.6] - 2023-11-09
 
 Fix a bug when N+1 is caused not in the request (e.g. Sidekiq) [51f051e](https://github.com/makicamel/bulletmark_repairer/commit/51f051e608b84b7da96ac879a324ed438c14eeeb)
