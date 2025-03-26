@@ -10,7 +10,7 @@ module BulletmarkRepairer
       result = []
       @associations.each do |_base_klass_name, all_associations|
         all_associations.each do |_key, associations|
-          # TODO: reccurent check
+          # TODO: recurrent check
           associations.each do |values|
             values.flatten.each do |value|
               result.append search_key(key, value)
