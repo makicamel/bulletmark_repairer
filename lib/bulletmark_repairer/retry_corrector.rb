@@ -24,7 +24,7 @@ class RetryCorrector < Parser::TreeRewriter
   def insert_includes(node:)
     return if patched?
     return if !node.respond_to?(:children) || node.children.empty?
-    return unless node.location.expression.line <= line_no && line_no <= node.location.expression.last_line
+    return unless line_no.between?(node.location.expression.line, node.location.expression.last_line)
 
     if node.type == :begin
       node.children.each { |child_node| insert_includes(node: child_node) }

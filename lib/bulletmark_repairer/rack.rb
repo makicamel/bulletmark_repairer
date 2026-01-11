@@ -17,9 +17,10 @@ module BulletmarkRepairer
     ensure
       trace_point.disable
       begin
-        if ::Thread.current[:bullet_notification_collector].notifications_present?
+        collector = ::Thread.current.thread_variable_get(:bullet_notification_collector)
+        if collector&.notifications_present?
           BulletmarkRepairer::Patcher.execute(
-            notifications: ::Thread.current[:bullet_notification_collector],
+            notifications: collector,
             controller: env['action_dispatch.request.parameters']['controller'],
             action: env['action_dispatch.request.parameters']['action'],
             loaded_associations: BulletmarkRepairer::Thread.current(:loaded_associations)

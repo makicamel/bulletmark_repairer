@@ -8,8 +8,8 @@ module BulletmarkRepairer
       key = target_klass_name.underscore
 
       result = []
-      @associations.each do |_base_klass_name, all_associations|
-        all_associations.each do |_key, associations|
+      @associations.each_value do |all_associations|
+        all_associations.each_value do |associations|
           # TODO: recurrent check
           associations.each do |values|
             values.flatten.each do |value|

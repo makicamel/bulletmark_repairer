@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Layout/IndentationWidth
 class MultipleLinesController < ActionController::Base
   def index
     @plays = Play.joins(:actors)
@@ -11,3 +12,4 @@ class MultipleLinesController < ActionController::Base
     end
   end
 end
+# rubocop:enable Layout/IndentationWidth
